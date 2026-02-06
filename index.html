@@ -3,38 +3,31 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Amol</title>
-
-  <style>
-    body {
-      margin: 0;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #0f172a;
-      color: #e5e7eb;
-      text-align: center;
-    }
-
-    h1 {
-      font-size: 2.8rem;
-      margin-bottom: 0.5rem;
-      letter-spacing: 2px;
-    }
-
-    p {
-      font-size: 1.1rem;
-      opacity: 0.8;
-    }
-  </style>
+  <title>UNI-CHAT</title>
 </head>
 
 <body>
-  <div>
-    <h1>THE AMOL</h1>
-    <p>Personal space on the internet.</p>
-  </div>
+  <h1>UNI-CHAT</h1>
+  <p>Global chat. Username only.</p>
+
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDK6cIyZqWnr71XXG1fnAKT4W7jrN0zus",
+      authDomain: "uni-chat-48775.firebaseapp.com",
+      projectId: "uni-chat-48775",
+      storageBucket: "uni-chat-48775.firebasestorage.app",
+      messagingSenderId: "863796936059",
+      appId: "1:863796936059:web:87a81183076a2bf64e11de"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    console.log("Firebase connected");
+  </script>
 </body>
 </html>
