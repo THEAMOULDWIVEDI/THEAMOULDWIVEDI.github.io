@@ -1,219 +1,252 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UNI-CHAT | Anonymous</title>
-    <style>
-        :root {
-            --bg: #f0f2f5;
-            --surface: #ffffff;
-            --text: #1c1e21;
-            --text-dim: #65676b;
-            --accent: #ff77b7;
-            --border: #dddfe2;
-            --bubble-me: #ff77b7;
-            --bubble-text: #ffffff;
-        }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>UNI-CHAT</title>
 
-        [data-theme="dark"] {
-            --bg: #18191a;
-            --surface: #242526;
-            --text: #e4e6eb;
-            --text-dim: #b0b3b8;
-            --accent: #bb86fc;
-            --border: #3e4042;
-            --bubble-me: #bb86fc;
-        }
+<style>
+/* ================= THEME VARIABLES ================= */
+:root {
+  --bg: #f0f2f5;
+  --surface: #ffffff;
+  --text: #1c1e21;
+  --border: #ddd;
+  --accent: #0084ff;
+}
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
-        body { background: var(--bg); color: var(--text); transition: 0.3s; overflow: hidden; height: 100vh; }
+[data-theme="dark"] {
+  --bg: #121212;
+  --surface: #1e1e1e;
+  --text: #ffffff;
+  --border: #333;
+  --accent: #bb86fc;
+}
 
-        /* --- UI COMPONENTS --- */
-        header { 
-            background: var(--surface); 
-            padding: 15px; 
-            display: flex; 
-            align-items: center; 
-            border-bottom: 1px solid var(--border);
-            position: sticky; top: 0; z-index: 10;
-        }
-        .header-title { flex: 1; text-align: center; font-weight: 800; letter-spacing: 1px; }
-        .btn-icon { background: none; border: none; font-size: 1.4rem; color: var(--accent); cursor: pointer; padding: 0 10px; }
+/* ================= BASE ================= */
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, Arial; }
+body { background: var(--bg); color: var(--text); height: 100vh; }
 
-        /* --- SCREENS --- */
-        .screen { height: calc(100vh - 60px); display: none; padding: 20px; overflow-y: auto; }
-        .active { display: flex; flex-direction: column; }
+/* ================= LAYOUT ================= */
+#app { height: 100vh; display: flex; flex-direction: column; }
 
-        /* --- HOME: ROOM CARDS --- */
-        .room-grid { display: grid; gap: 12px; }
-        .card { 
-            background: var(--surface); padding: 20px; border-radius: 15px; 
-            border: 1px solid var(--border); cursor: pointer; transition: 0.2s;
-        }
-        .card:active { transform: scale(0.97); }
-        .card h3 { color: var(--accent); margin-bottom: 4px; }
+header {
+  background: var(--surface);
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+}
 
-        /* --- CHAT AREA --- */
-        #chat-flow { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-bottom: 20px; }
-        .msg { max-width: 80%; padding: 10px 14px; border-radius: 18px; line-height: 1.4; position: relative; animation: pop 0.2s ease-out; }
-        @keyframes pop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        
-        .msg-me { align-self: flex-end; background: var(--bubble-me); color: white; border-bottom-right-radius: 4px; }
-        .msg-other { align-self: flex-start; background: var(--border); color: var(--text); border-bottom-left-radius: 4px; }
-        .msg-info { font-size: 0.7rem; opacity: 0.7; display: block; margin-top: 4px; text-align: right; }
-        .msg-user { font-size: 0.75rem; font-weight: bold; margin-bottom: 2px; display: block; }
+.icon { font-size: 22px; cursor: pointer; }
+.title { flex: 1; text-align: center; font-weight: bold; }
 
-        .input-box { background: var(--surface); padding: 15px; display: flex; gap: 10px; border-top: 1px solid var(--border); }
-        input { flex: 1; padding: 12px 18px; border-radius: 25px; border: 1px solid var(--border); outline: none; background: var(--bg); color: var(--text); }
+.screen { flex: 1; display: none; padding: 20px; overflow-y: auto; }
+.screen.active { display: block; }
 
-        /* --- MODAL & MENU --- */
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 100; }
-        .modal { background: var(--surface); padding: 30px; border-radius: 20px; width: 90%; max-width: 350px; text-align: center; }
-        
-        .side-menu { 
-            position: fixed; top: 0; left: 0; width: 280px; height: 100%; 
-            background: var(--surface); z-index: 200; transform: translateX(-100%); transition: 0.3s; padding: 20px; 
-        }
-        .side-menu.open { transform: translateX(0); }
-        .menu-item { list-style: none; padding: 15px; border-bottom: 1px solid var(--border); cursor: pointer; font-weight: 500; }
+/* ================= ROOMS ================= */
+.room {
+  background: var(--surface);
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  margin-bottom: 12px;
+  cursor: pointer;
+}
 
-        .hidden { display: none !important; }
-    </style>
+/* ================= CHAT ================= */
+#messages { display: flex; flex-direction: column; gap: 10px; }
+.msg {
+  max-width: 80%;
+  padding: 10px 14px;
+  border-radius: 16px;
+  background: var(--border);
+}
+.msg.own {
+  align-self: flex-end;
+  background: var(--accent);
+  color: #fff;
+}
+
+small { opacity: 0.7; font-size: 11px; }
+
+.input-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+input {
+  flex: 1;
+  padding: 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+}
+button {
+  padding: 12px 18px;
+  border-radius: 20px;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+}
+
+/* ================= MENU ================= */
+.menu {
+  position: fixed;
+  top: 0; left: 0;
+  width: 250px;
+  height: 100%;
+  background: var(--surface);
+  transform: translateX(-100%);
+  transition: 0.3s;
+  padding: 20px;
+  z-index: 100;
+}
+.menu.open { transform: translateX(0); }
+.menu div { margin: 15px 0; cursor: pointer; }
+
+/* ================= MODAL ================= */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+.modal-box {
+  background: var(--surface);
+  padding: 25px;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 320px;
+  text-align: center;
+}
+</style>
 </head>
+
 <body>
+<div id="app">
 
-    <header>
-        <button class="btn-icon" id="menuBtn">☰</button>
-        <button class="btn-icon hidden" id="backBtn">←</button>
-        <div class="header-title" id="roomTitle">UNI-CHAT</div>
-        <div style="width: 45px;"></div>
-    </header>
+<!-- MENU -->
+<div class="menu" id="menu">
+  <div onclick="goHome()">🏠 Home</div>
+  <div onclick="toggleTheme()">🌓 Toggle Theme</div>
+  <div onclick="toggleMenu()">❌ Close</div>
+</div>
 
-    <main id="home-screen" class="screen active">
-        <h2 style="margin-bottom: 15px;">Public Rooms</h2>
-        <div class="room-grid">
-            <div class="card" onclick="enterRoom('Global Chat')"><h3>🌍 Global Chat</h3><p>Everyone is here.</p></div>
-            <div class="card" onclick="enterRoom('College Chat')"><h3>🎓 College Chat</h3><p>Campus talk only.</p></div>
-            <div class="card" onclick="enterRoom('Tech Chat')"><h3>💻 Tech Chat</h3><p>Code and hardware.</p></div>
-        </div>
-    </main>
+<!-- HEADER -->
+<header>
+  <span class="icon" onclick="toggleMenu()">☰</span>
+  <span class="icon hidden" id="back" onclick="goHome()">←</span>
+  <div class="title" id="title">UNI-CHAT</div>
+</header>
 
-    <main id="chat-screen" class="screen">
-        <div id="chat-flow"></div>
-        <div class="input-box">
-            <input type="text" id="msgInput" placeholder="Message...">
-            <button class="btn-icon" id="sendBtn">➤</button>
-        </div>
-    </main>
+<!-- HOME -->
+<div class="screen active" id="home">
+  <div class="room" onclick="openChat('Global Chat')">🌍 Global Chat</div>
+  <div class="room" onclick="openChat('College Chat')">🎓 College Chat</div>
+  <div class="room" onclick="openChat('Tech Chat')">💻 Tech Chat</div>
+  <div class="room" onclick="openChat('Random Chat')">💬 Random Chat</div>
+</div>
 
-    <div class="overlay" id="menuOverlay"></div>
-    <nav class="side-menu" id="sideMenu">
-        <h2>UNI-CHAT</h2>
-        <li class="menu-item" onclick="exitToHome()">🏠 Home</li>
-        <li class="menu-item" onclick="toggleTheme()">🌓 Toggle Theme</li>
-        <li class="menu-item" onclick="clearLocalData()">🗑️ Clear Username</li>
-    </nav>
+<!-- CHAT -->
+<div class="screen" id="chat">
+  <div id="messages"></div>
+  <div class="input-row">
+    <input id="msgInput" placeholder="Type a message..." />
+    <button onclick="sendMsg()">Send</button>
+  </div>
+</div>
 
-    <div class="overlay" id="userModal">
-        <div class="modal">
-            <h2>Who are you?</h2>
-            <p style="margin: 10px 0 20px; color: var(--text-dim);">Pick a username to start.</p>
-            <input type="text" id="usernameInput" placeholder="Username..." maxlength="12">
-            <button class="card" style="width: 100%; margin-top: 15px; background: var(--accent); color: white;" onclick="setupUser()">Join Chat</button>
-        </div>
-    </div>
+<!-- USERNAME MODAL -->
+<div class="modal" id="userModal">
+  <div class="modal-box">
+    <h3>Welcome</h3><br>
+    <input id="userInput" placeholder="Username" />
+    <br><br>
+    <button onclick="saveUser()">Continue</button>
+  </div>
+</div>
+
+</div>
 
 <script>
-    /* --- STATE --- */
-    let USER = localStorage.getItem('username') || null;
-    let CURRENT_ROOM = null;
+/* ================= STATE ================= */
+let USER = localStorage.getItem('username') || '';
+let CURRENT_ROOM = '';
 
-    /* --- DOM ELEMENTS --- */
-    const homeScreen = document.getElementById('home-screen');
-    const chatScreen = document.getElementById('chat-screen');
-    const chatFlow = document.getElementById('chat-flow');
-    const msgInput = document.getElementById('msgInput');
-    const sideMenu = document.getElementById('sideMenu');
-    const menuOverlay = document.getElementById('menuOverlay');
+/* ================= INIT ================= */
+if (!USER) document.getElementById('userModal').style.display = 'flex';
+if (localStorage.getItem('theme') === 'dark')
+  document.body.setAttribute('data-theme', 'dark');
 
-    /* --- INIT --- */
-    window.onload = () => {
-        if (!USER) document.getElementById('userModal').style.display = 'flex';
-        if (localStorage.getItem('theme') === 'dark') document.body.setAttribute('data-theme', 'dark');
-    };
+/* ================= MENU ================= */
+function toggleMenu() {
+  document.getElementById('menu').classList.toggle('open');
+}
 
-    /* --- LOGIC --- */
-    function setupUser() {
-        const val = document.getElementById('usernameInput').value.trim();
-        if (val) {
-            USER = val;
-            localStorage.setItem('username', val);
-            document.getElementById('userModal').style.display = 'none';
-        }
-    }
+/* ================= NAV ================= */
+function openChat(room) {
+  CURRENT_ROOM = room;
+  document.getElementById('home').classList.remove('active');
+  document.getElementById('chat').classList.add('active');
+  document.getElementById('title').innerText = room;
+  document.getElementById('messages').innerHTML = '';
+  toggleMenu();
+}
 
-    function enterRoom(name) {
-        CURRENT_ROOM = name;
-        homeScreen.classList.remove('active');
-        chatScreen.classList.add('active');
-        document.getElementById('backBtn').classList.remove('hidden');
-        document.getElementById('menuBtn').classList.add('hidden');
-        document.getElementById('roomTitle').innerText = name;
-        chatFlow.innerHTML = ''; // Fresh session
-    }
+function goHome() {
+  document.getElementById('chat').classList.remove('active');
+  document.getElementById('home').classList.add('active');
+  document.getElementById('title').innerText = 'UNI-CHAT';
+  toggleMenu();
+}
 
-    function exitToHome() {
-        homeScreen.classList.add('active');
-        chatScreen.classList.remove('active');
-        document.getElementById('backBtn').classList.add('hidden');
-        document.getElementById('menuBtn').classList.remove('hidden');
-        document.getElementById('roomTitle').innerText = 'UNI-CHAT';
-        closeMenu();
-    }
+/* ================= CHAT ================= */
+function sendMsg() {
+  const input = document.getElementById('msgInput');
+  const text = input.value.trim();
+  if (!text) return;
 
-    function pushMessage() {
-        const text = msgInput.value.trim();
-        if (!text) return;
+  const msg = document.createElement('div');
+  msg.className = 'msg own';
+  msg.textContent = text;
 
-        const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        const msgDiv = document.createElement('div');
-        msgDiv.className = 'msg msg-me';
-        
-        // Safety: textContent prevents XSS
-        msgDiv.innerHTML = `<span class="msg-user">You</span> <span class="text-content"></span> <span class="msg-info">${time}</span>`;
-        msgDiv.querySelector('.text-content').textContent = text;
+  const time = document.createElement('small');
+  time.textContent = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
 
-        chatFlow.appendChild(msgDiv);
-        msgInput.value = '';
-        chatFlow.scrollTop = chatFlow.scrollHeight;
-    }
+  msg.appendChild(document.createElement('br'));
+  msg.appendChild(time);
 
-    /* --- EVENT LISTENERS --- */
-    document.getElementById('sendBtn').onclick = pushMessage;
-    document.getElementById('backBtn').onclick = exitToHome;
-    document.getElementById('menuBtn').onclick = () => { sideMenu.classList.add('open'); menuOverlay.style.display = 'block'; };
-    menuOverlay.onclick = closeMenu;
+  document.getElementById('messages').appendChild(msg);
+  input.value = '';
+}
 
-    msgInput.onkeypress = (e) => { if (e.key === 'Enter') pushMessage(); };
+/* ================= USER ================= */
+function saveUser() {
+  const val = document.getElementById('userInput').value.trim();
+  if (!val) return;
+  USER = val;
+  localStorage.setItem('username', val);
+  document.getElementById('userModal').style.display = 'none';
+}
 
-    function closeMenu() {
-        sideMenu.classList.remove('open');
-        menuOverlay.style.display = 'none';
-    }
-
-    function toggleTheme() {
-        const isDark = document.body.getAttribute('data-theme') === 'dark';
-        document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
-        localStorage.setItem('theme', isDark ? 'light' : 'dark');
-        closeMenu();
-    }
-
-    function clearLocalData() {
-        localStorage.clear();
-        location.reload();
-    }
+/* ================= THEME ================= */
+function toggleTheme() {
+  const dark = document.body.getAttribute('data-theme') === 'dark';
+  if (dark) {
+    document.body.removeAttribute('data-theme');
+    localStorage.setItem('theme', 'light');
+  } else {
+    document.body.setAttribute('data-theme', 'dark');
+    localStorage.setItem('theme', 'dark');
+  }
+}
 </script>
+
 </body>
 </html>
-
