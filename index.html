@@ -39,8 +39,18 @@ input, button {
 
 button {
   cursor: pointer;
+  border-radius: 999px;
+  font-weight: 600;
+  transition: all 0.2s ease;
 }
 
+button:hover {
+  transform: scale(1.02);
+  opacity: 0.95;
+}
+.theme-btn {
+  background: var(--box);
+}
 /* THEMES */
 body.dark {
   --bg: #121212;
@@ -67,11 +77,11 @@ body.green {
 <body>
   <h1>UNI-CHAT</h1>
   <p>Global chat. Username only.</p>
-<div style="text-align:center; margin: 15px;">
-  <button onclick="setTheme('dark')">Dark</button>
-  <button onclick="setTheme('pink')">Pink</button>
-  <button onclick="setTheme('green')">Green</button>
-  <button onclick="setTheme('')">Light</button>
+<div style="text-align:center; margin: 15px; display:grid; gap:10px;">
+<button class="theme-btn" onclick="setTheme('dark')">Dark</button>
+<button class="theme-btn" onclick="setTheme('pink')">Pink</button>
+<button class="theme-btn" onclick="setTheme('green')">Green</button>
+<button class="theme-btn" onclick="setTheme('')">Light</button>
 </div>
   <input placeholder="username">
   <button onclick="saveUsername()">Enter</button>
@@ -95,6 +105,7 @@ if (savedTheme) document.body.className = savedTheme;
   </script>
 </body>
 </html>
+
 
 
 
