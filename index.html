@@ -50,6 +50,9 @@ button:hover {
 }
 .theme-btn {
   background: var(--box);
+}.theme-btn.active {
+  outline: 2px solid var(--border);
+  opacity: 1;
 }
 /* THEMES */
 body.dark {
@@ -92,7 +95,15 @@ if (savedTheme) document.body.className = savedTheme;
     function setTheme(theme) {
   document.body.className = theme;
   localStorage.setItem('theme', theme);
-    };
+
+  document.querySelectorAll('.theme-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+
+  const activeBtn = [...document.querySelectorAll('.theme-btn')]
+    .find(b => b.getAttribute('onclick').includes(theme));
+  if (activeBtn) activeBtn.classList.add('active');
+    }
     function saveUsername() {
       const name = document.querySelector('input').value.trim();
       if (!name) {
@@ -105,6 +116,7 @@ if (savedTheme) document.body.className = savedTheme;
   </script>
 </body>
 </html>
+
 
 
 
