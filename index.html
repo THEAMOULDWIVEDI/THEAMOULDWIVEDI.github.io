@@ -250,3 +250,243 @@ function toggleTheme() {
 
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UNI-CHAT</title>
+
+<style>
+/* ================= THEMES ================= */
+:root{
+  --bg:#f0f2f5;
+  --surface:#ffffff;
+  --text:#111;
+  --border:#ddd;
+  --accent:#0084ff;
+  --bubble:#e4e6eb;
+}
+[data-theme="dark"]{
+  --bg:#121212;
+  --surface:#1e1e1e;
+  --text:#fff;
+  --border:#333;
+  --accent:#bb86fc;
+  --bubble:#2a2a2a;
+}
+
+/* ================= BASE ================= */
+*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui}
+body{background:var(--bg);color:var(--text);height:100vh}
+#app{height:100vh;display:flex;flex-direction:column}
+
+/* ================= HEADER ================= */
+header{
+  display:flex;align-items:center;
+  padding:14px;background:var(--surface);
+  border-bottom:1px solid var(--border)
+}
+.icon{font-size:22px;cursor:pointer}
+.title{flex:1;text-align:center;font-weight:600}
+
+/* ================= SCREENS ================= */
+.screen{flex:1;display:none;padding:20px;overflow-y:auto}
+.screen.active{display:block}
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:14px;margin-bottom:12px;
+  cursor:pointer
+}
+
+/* ================= CHAT ================= */
+#messages{display:flex;flex-direction:column;gap:10px}
+.msg{
+  max-width:75%;
+  padding:10px 14px;
+  border-radius:14px;
+  background:var(--bubble)
+}
+.msg.own{
+  align-self:flex-end;
+  background:var(--accent);
+  color:#fff
+}
+small{font-size:11px;opacity:.7}
+
+.input-row{
+  display:flex;gap:10px;margin-top:12px
+}
+input{
+  flex:1;padding:12px;
+  border-radius:20px;
+  border:1px solid var(--border);
+  background:var(--bg);color:var(--text)
+}
+button{
+  padding:12px 18px;
+  border-radius:20px;
+  border:none;
+  background:var(--accent);
+  color:#fff;cursor:pointer
+}
+
+/* ================= MENU ================= */
+.menu{
+  position:fixed;top:0;left:0;
+  width:260px;height:100%;
+  background:var(--surface);
+  transform:translateX(-100%);
+  transition:.3s;padding:20px;z-index:10
+}
+.menu.open{transform:translateX(0)}
+.menu div{margin:14px 0;cursor:pointer}
+
+/* ================= MODAL ================= */
+.modal{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.6);
+  display:none;align-items:center;
+  justify-content:center;z-index:20
+}
+.modal-box{
+  background:var(--surface);
+  padding:24px;border-radius:16px;
+  width:90%;max-width:320px;
+  text-align:center
+}
+</style>
+</head>
+
+<body>
+<div id="app">
+
+<!-- MENU -->
+<div class="menu" id="menu">
+  <div onclick="goHome()">🏠 Home</div>
+  <div onclick="toggleTheme()">🌓 Toggle Theme</div>
+  <div onclick="goPrivate()">🔒 Private Chats</div>
+  <div onclick="toggleMenu()">❌ Close</div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <span class="icon" onclick="toggleMenu()">☰</span>
+  <span class="icon hidden" id="back" onclick="goHome()">←</span>
+  <div class="title" id="title">UNI-CHAT</div>
+</header>
+
+<!-- HOME -->
+<div class="screen active" id="home">
+  <div class="card" onclick="openChat('🌍 Global Room')">🌍 Global Room</div>
+  <div class="card" onclick="openChat('🎓 College Room')">🎓 College Room</div>
+  <div class="card" onclick="openChat('💻 Tech Room')">💻 Tech Room</div>
+  <div class="card" onclick="openChat('👥 Private Group')">👥 Private Group</div>
+</div>
+
+<!-- PRIVATE -->
+<div class="screen" id="private">
+  <h3>Private Chats</h3><br>
+  <div class="card" onclick="openChat('🔐 Chat with Alex')">🔐 Alex</div>
+  <div class="card" onclick="openChat('🔐 Chat with Sam')">🔐 Sam</div>
+</div>
+
+<!-- CHAT -->
+<div class="screen" id="chat">
+  <div id="messages"></div>
+  <div class="input-row">
+    <input id="msgInput" placeholder="Type a message…">
+    <button onclick="sendMsg()">Send</button>
+  </div>
+</div>
+
+<!-- USER MODAL -->
+<div class="modal" id="userModal">
+  <div class="modal-box">
+    <h3>Welcome</h3><br>
+    <input id="userInput" placeholder="Username">
+    <br><br>
+    <button onclick="saveUser()">Continue</button>
+  </div>
+</div>
+
+</div>
+
+<script>
+/* ================= STATE ================= */
+let USER = localStorage.getItem('username') || '';
+let THEME = localStorage.getItem('theme');
+
+/* ================= INIT ================= */
+if(!USER) userModal.style.display='flex';
+if(THEME==='dark') document.body.setAttribute('data-theme','dark');
+
+/* ================= MENU ================= */
+function toggleMenu(){ menu.classList.toggle('open'); }
+
+/* ================= NAV ================= */
+function openChat(name){
+  home.classList.remove('active');
+  private.classList.remove('active');
+  chat.classList.add('active');
+  title.innerText=name;
+  messages.innerHTML='';
+  toggleMenu();
+}
+function goHome(){
+  chat.classList.remove('active');
+  private.classList.remove('active');
+  home.classList.add('active');
+  title.innerText='UNI-CHAT';
+}
+function goPrivate(){
+  home.classList.remove('active');
+  chat.classList.remove('active');
+  private.classList.add('active');
+  title.innerText='Private Chats';
+  toggleMenu();
+}
+
+/* ================= CHAT ================= */
+function sendMsg(){
+  const text=msgInput.value.trim();
+  if(!text) return;
+  const m=document.createElement('div');
+  m.className='msg own';
+  m.textContent=text;
+  const t=document.createElement('small');
+  t.textContent=new Date().toLocaleTimeString([],{
+    hour:'2-digit',minute:'2-digit'
+  });
+  m.appendChild(document.createElement('br'));
+  m.appendChild(t);
+  messages.appendChild(m);
+  msgInput.value='';
+}
+
+/* ================= USER ================= */
+function saveUser(){
+  const v=userInput.value.trim();
+  if(!v) return;
+  USER=v;
+  localStorage.setItem('username',v);
+  userModal.style.display='none';
+}
+
+/* ================= THEME ================= */
+function toggleTheme(){
+  const d=document.body.getAttribute('data-theme')==='dark';
+  if(d){
+    document.body.removeAttribute('data-theme');
+    localStorage.setItem('theme','light');
+  }else{
+    document.body.setAttribute('data-theme','dark');
+    localStorage.setItem('theme','dark');
+  }
+}
+</script>
+
+</body>
+</html>
