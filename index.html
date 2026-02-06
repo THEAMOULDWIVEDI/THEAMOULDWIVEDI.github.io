@@ -6,190 +6,252 @@
 <title>UNI-CHAT</title>
 
 <style>
-:root {
-  --bg: #f5f5f5;
-  --text: #000;
-  --box: #fff;
-  --border: #ccc;
-  --accent: #999;
+/* ===== VARIABLES ===== */
+:root{
+  --bg:#f5f5f5;
+  --text:#000;
+  --box:#fff;
+  --border:#ccc;
+  --accent:#ff9acb;
 }
 
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: var(--bg);
-  color: var(--text);
+/* ===== THEMES ===== */
+body.dark{
+  --bg:#121212;
+  --text:#fff;
+  --box:#1e1e1e;
+  --border:#333;
+}
+body.pink{
+  --bg:#ffe6f0;
+  --box:#fff0f7;
+  --accent:#ff9acb;
+}
+body.green{
+  --bg:#e6fff2;
+  --box:#f0fff8;
+  --accent:#66cc99;
 }
 
-/* THEMES */
-body.dark {
-  --bg: #121212;
-  --text: #fff;
-  --box: #1e1e1e;
-  --border: #333;
-  --accent: #555;
-}
-body.pink {
-  --bg: #ffe6f0;
-  --box: #fff0f7;
-  --border: #ff99c8;
-  --accent: #ff99c8;
-}
-body.green {
-  --bg: #e6fff2;
-  --box: #f0fff8;
-  --border: #66cc99;
-  --accent: #66cc99;
+/* ===== BASE ===== */
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
 }
 
-/* HEADER */
-header {
-  display: flex;
-  align-items: center;
-  padding: 15px;
-  font-size: 22px;
+/* ===== HEADER ===== */
+.header{
+  display:flex;
+  align-items:center;
+  padding:15px;
 }
-.menu-btn {
-  font-size: 26px;
-  cursor: pointer;
-  margin-right: 10px;
-}
-
-/* LOBBY */
-main {
-  padding: 20px;
-}
-.room {
-  background: var(--box);
-  border: 1px solid var(--border);
-  padding: 15px;
-  margin-bottom: 10px;
-  border-radius: 10px;
+.menu-btn{
+  font-size:26px;
+  cursor:pointer;
+  margin-right:10px;
 }
 
-/* MODAL */
-.modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* ===== HOME ===== */
+.home{
+  text-align:center;
+  margin-top:80px;
 }
-.modal-box {
-  background: var(--box);
-  padding: 25px;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 300px;
-  text-align: center;
-}
-input, button {
-  width: 100%;
-  padding: 12px;
-  margin-top: 10px;
-  font-size: 16px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-}
-button {
-  background: var(--accent);
-  border: none;
-  font-weight: bold;
-  cursor: pointer;
+.home button{
+  padding:14px 24px;
+  border-radius:999px;
+  border:none;
+  background:var(--accent);
+  font-weight:bold;
 }
 
-/* MENU */
-.menu {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 250px;
-  height: 100%;
-  background: var(--box);
-  border-right: 1px solid var(--border);
-  padding: 20px;
-  transform: translateX(-100%);
-  transition: transform 0.3s ease;
-  z-index: 1000;
+/* ===== MENU ===== */
+.menu{
+  position:fixed;
+  top:0;
+  left:0;
+  width:260px;
+  height:100%;
+  background:var(--box);
+  border-right:1px solid var(--border);
+  padding:20px;
+  transform:translateX(-100%);
+  transition:transform .3s ease;
+  z-index:1000;
 }
-.menu.open {
-  transform: translateX(0);
+.menu.open{
+  transform:translateX(0);
 }
-.menu h3 {
-  margin-top: 0;
+.menu button{
+  width:100%;
+  margin-bottom:10px;
+  padding:10px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:var(--bg);
 }
-.menu button {
-  margin-bottom: 10px;
+.back{
+  font-weight:bold;
+}
+
+/* ===== POPUP ===== */
+.popup{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.6);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:2000;
+}
+.popup-box{
+  background:var(--box);
+  padding:20px;
+  border-radius:12px;
+  width:90%;
+  max-width:320px;
+  text-align:center;
+}
+.popup-box input{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+}
+
+/* ===== CHAT ===== */
+.chat{
+  display:none;
+  padding:15px;
+}
+.chat.active{
+  display:block;
 }
 </style>
 </head>
 
 <body>
 
-<!-- MENU -->
-<div class="menu" id="menu">
-  <h3>Theme</h3>
-  <button onclick="setTheme('light')">Light</button>
-  <button onclick="setTheme('dark')">Dark</button>
-  <button onclick="setTheme('pink')">Pink</button>
-  <button onclick="setTheme('green')">Green</button>
-</div>
-
-<!-- HEADER -->
-<header>
-  <span class="menu-btn" onclick="toggleMenu()">☰</span>
-  <strong>UNI-CHAT</strong>
-</header>
-
-<!-- LOBBY -->
-<main>
-  <h3>Available Chat Rooms</h3>
-  <div class="room">🌍 Global Chat</div>
-  <div class="room">🎓 College Chat</div>
-  <div class="room">💬 Random Chat</div>
-  <div class="room">💻 Tech Chat</div>
-</main>
-
-<!-- MODAL -->
-<div class="modal" id="modal">
-  <div class="modal-box">
-    <h2>Welcome to UNI-CHAT 👋</h2>
+<!-- ===== POPUP ===== -->
+<div class="popup" id="popup">
+  <div class="popup-box">
+    <h2>Welcome to UNI-CHAT</h2>
     <p>Let’s choose your username</p>
     <input id="usernameInput" placeholder="username">
     <button onclick="saveUsername()">Continue</button>
   </div>
 </div>
 
+<!-- ===== MENU ===== -->
+<div class="menu" id="menu">
+  <button class="back" onclick="renderMainMenu()">← Back</button>
+  <div id="menuContent"></div>
+</div>
+
+<!-- ===== HEADER ===== -->
+<div class="header">
+  <div class="menu-btn" onclick="toggleMenu()">☰</div>
+  <h3>UNI-CHAT</h3>
+</div>
+
+<!-- ===== HOME ===== -->
+<div class="home" id="home">
+  <h1>UNI-CHAT</h1>
+  <p>Simple. Anonymous. Fast.</p>
+</div>
+
+<!-- ===== CHAT ===== -->
+<div class="chat" id="chat">
+  <h3 id="chatTitle"></h3>
+  <p>Chat UI will go here</p>
+</div>
+
 <script>
-/* MENU */
-function toggleMenu() {
-  document.getElementById('menu').classList.toggle('open');
+/* ===== ELEMENTS ===== */
+const menu = document.getElementById('menu');
+const menuContent = document.getElementById('menuContent');
+const home = document.getElementById('home');
+const chat = document.getElementById('chat');
+const chatTitle = document.getElementById('chatTitle');
+const popup = document.getElementById('popup');
+
+/* ===== MENU ===== */
+function toggleMenu(){
+  menu.classList.toggle('open');
+  renderMainMenu();
 }
 
-/* THEME */
-function setTheme(theme) {
+function renderMainMenu(){
+  menuContent.innerHTML = `
+    <button onclick="renderRooms()">Chat Rooms</button>
+    <button onclick="renderFavorites()">Favorite Rooms</button>
+    <button onclick="renderRecent()">Last Used Rooms</button>
+    <button onclick="renderThemes()">Theme</button>
+    <button onclick="renderPrivate()">Private Messages</button>
+  `;
+}
+
+function renderThemes(){
+  menuContent.innerHTML = `
+    <button onclick="setTheme('light')">Light</button>
+    <button onclick="setTheme('dark')">Dark</button>
+    <button onclick="setTheme('pink')">Pink</button>
+    <button onclick="setTheme('green')">Green</button>
+  `;
+}
+
+function renderRooms(){
+  menuContent.innerHTML = `
+    <button onclick="openChat('Global Chat')">🌍 Global Chat</button>
+    <button onclick="openChat('College Chat')">🎓 College Chat</button>
+    <button onclick="openChat('Random Chat')">💬 Random Chat</button>
+    <button onclick="openChat('Tech Chat')">💻 Tech Chat</button>
+  `;
+}
+
+function renderPrivate(){
+  menuContent.innerHTML = `
+    <button onclick="openChat('Private – User1')">User1</button>
+    <button onclick="openChat('Private – User2')">User2</button>
+  `;
+}
+
+function renderFavorites(){
+  menuContent.innerHTML = `<p>No favorites yet</p>`;
+}
+function renderRecent(){
+  menuContent.innerHTML = `<p>No recent chats</p>`;
+}
+
+/* ===== CHAT ===== */
+function openChat(name){
+  home.style.display = 'none';
+  chat.classList.add('active');
+  chatTitle.innerText = name;
+  menu.classList.remove('open');
+}
+
+/* ===== THEME ===== */
+function setTheme(theme){
   document.body.className = theme === 'light' ? '' : theme;
   localStorage.setItem('theme', theme);
 }
 
-/* LOAD SAVED THEME */
-setTheme(localStorage.getItem('theme') || 'light');
-
-/* USERNAME */
-function saveUsername() {
-  const name = document.getElementById('usernameInput').value.trim();
-  if (!name) return;
-  localStorage.setItem('username', name);
-  document.getElementById('modal').style.display = 'none';
+/* ===== USERNAME ===== */
+function saveUsername(){
+  const val = usernameInput.value.trim();
+  if(!val) return alert('Enter username');
+  localStorage.setItem('username', val);
+  popup.style.display = 'none';
 }
 
-/* CHECK USER */
-if (localStorage.getItem('username')) {
-  document.getElementById('modal').style.display = 'none';
+/* ===== INIT ===== */
+if(localStorage.getItem('username')){
+  popup.style.display = 'none';
 }
+const savedTheme = localStorage.getItem('theme');
+if(savedTheme) setTheme(savedTheme);
 </script>
 
 </body>
 </html>
-
