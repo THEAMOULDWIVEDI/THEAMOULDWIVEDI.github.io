@@ -10,24 +10,6 @@
   <h1>UNI-CHAT</h1>
   <p>Global chat. Username only.</p>
 
-  <!-- Firebase -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-    import { getFirestore } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyDK6cIyZqWnr71XXG1fnAKT4W7jrN0zus",
-      authDomain: "uni-chat-48775.firebaseapp.com",
-      projectId: "uni-chat-48775",
-      storageBucket: "uni-chat-48775.firebasestorage.app",
-      messagingSenderId: "863796936059",
-      appId: "1:863796936059:web:87a81183076a2bf64e11de"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    console.log("Firebase connected");
-  </script>
+  <input placeholder="username">
 </body>
 </html>
