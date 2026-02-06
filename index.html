@@ -11,5 +11,18 @@
   <p>Global chat. Username only.</p>
 
   <input placeholder="username">
+  <button onclick="saveUsername()">Enter</button>
+
+  <script>
+    function saveUsername() {
+      const name = document.querySelector('input').value.trim();
+      if (!name) {
+        alert('Enter username');
+        return;
+      }
+      localStorage.setItem('username', name);
+      alert('Saved: ' + name);
+    }
+  </script>
 </body>
 </html>
