@@ -67,12 +67,22 @@ body.green {
 <body>
   <h1>UNI-CHAT</h1>
   <p>Global chat. Username only.</p>
-
+<div style="text-align:center; margin: 15px;">
+  <button onclick="setTheme('dark')">Dark</button>
+  <button onclick="setTheme('pink')">Pink</button>
+  <button onclick="setTheme('green')">Green</button>
+  <button onclick="setTheme('')">Light</button>
+</div>
   <input placeholder="username">
   <button onclick="saveUsername()">Enter</button>
 
   <script>
-  document.body.className = 'dark';
+const savedTheme = localStorage.getItem('theme');
+if (savedTheme) document.body.className = savedTheme;
+    function setTheme(theme) {
+  document.body.className = theme;
+  localStorage.setItem('theme', theme);
+    };
     function saveUsername() {
       const name = document.querySelector('input').value.trim();
       if (!name) {
@@ -85,6 +95,7 @@ body.green {
   </script>
 </body>
 </html>
+
 
 
 
