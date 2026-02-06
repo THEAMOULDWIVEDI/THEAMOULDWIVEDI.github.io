@@ -7,34 +7,38 @@
 
 <style>
 :root{
-  --bg:#f5f5f5;
-  --text:#111;
-  --box:#fff;
+  --bg:#fff;
+  --text:#000;
+  --card:#f3f3f3;
   --border:#ddd;
-  --accent:#ff8fb1;
+  --accent:#ff77b7;
 }
-
 body.dark{
   --bg:#121212;
-  --text:#f5f5f5;
-  --box:#1e1e1e;
+  --text:#fff;
+  --card:#1e1e1e;
   --border:#333;
   --accent:#bb86fc;
 }
 body.pink{
   --bg:#ffe6f0;
-  --box:#fff0f7;
+  --text:#000;
+  --card:#fff0f7;
+  --border:#ffb3d1;
+  --accent:#ff77b7;
 }
 body.green{
   --bg:#e6fff2;
-  --box:#f0fff8;
-  --accent:#4caf7d;
+  --text:#000;
+  --card:#f0fff8;
+  --border:#66cc99;
+  --accent:#3cb371;
 }
 
 *{box-sizing:border-box}
 body{
   margin:0;
-  font-family:system-ui,sans-serif;
+  font-family:Arial, sans-serif;
   background:var(--bg);
   color:var(--text);
 }
@@ -44,279 +48,233 @@ body{
   display:flex;
   align-items:center;
   gap:12px;
-  padding:14px;
+  padding:12px;
+  border-bottom:1px solid var(--border);
 }
-.menu-btn{font-size:26px;cursor:pointer}
-
-/* HOME */
-.home{
-  text-align:center;
-  margin-top:80px;
+.icon{
+  font-size:22px;
+  cursor:pointer;
 }
-
-/* OVERLAY */
-.overlay{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.45);
-  display:none;
-  z-index:900;
-}
-.overlay.show{display:block}
+.hidden{display:none}
 
 /* MENU */
 .menu{
   position:fixed;
-  top:0;left:0;
+  top:0; left:0;
   width:260px;
   height:100%;
-  background:var(--box);
-  padding:16px;
+  background:var(--card);
+  padding:20px;
   transform:translateX(-100%);
-  transition:.25s;
+  transition:0.3s;
   z-index:1000;
 }
 .menu.open{transform:translateX(0)}
-.menu h3{margin-top:0}
 .menu button{
   width:100%;
+  margin:8px 0;
   padding:12px;
-  margin-bottom:10px;
-  border-radius:999px;
-  border:1px solid var(--border);
+  border:none;
+  border-radius:14px;
   background:var(--bg);
   color:var(--text);
-  font-weight:600;
+  font-size:16px;
+  cursor:pointer;
+}
+
+/* SCREENS */
+.screen{padding:20px}
+.card{
+  background:var(--card);
+  border-radius:18px;
+  padding:16px;
+  margin:12px 0;
+  cursor:pointer;
+  border:1px solid var(--border);
 }
 
 /* CHAT */
-.chat{
-  display:none;
-  height:100vh;
-  display:flex;
-  flex-direction:column;
-}
-.chat.active{display:flex}
-
-.chat-header{
-  padding:14px;
-  border-bottom:1px solid var(--border);
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-
-.chat-messages{
-  flex:1;
-  padding:14px;
+.chat-box{
+  height:60vh;
   overflow-y:auto;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
+  margin-bottom:10px;
 }
-
 .msg{
-  max-width:75%;
-  padding:12px 16px;
-  border-radius:18px;
-}
-
-.msg.me{
-  align-self:flex-end;
-  background:var(--accent);
-  color:#000;
-}
-.msg.other{
-  align-self:flex-start;
-  background:var(--box);
-  border:1px solid var(--border);
-}
-
-.meta{
-  font-size:11px;
-  opacity:.7;
-  margin-bottom:4px;
-}
-
-.chat-input{
+  background:var(--card);
   padding:10px;
+  border-radius:14px;
+  margin:6px 0;
+}
+.msg small{
+  opacity:0.6;
+  font-size:12px;
+}
+
+/* INPUT */
+.input-row{
   display:flex;
   gap:8px;
-  border-top:1px solid var(--border);
 }
-.chat-input input{
+input{
   flex:1;
   padding:12px;
-  border-radius:999px;
+  border-radius:14px;
   border:1px solid var(--border);
 }
-.chat-input button{
-  padding:12px 18px;
-  border-radius:999px;
+.send{
+  padding:12px 16px;
   border:none;
+  border-radius:14px;
   background:var(--accent);
-  font-weight:700;
+  color:#fff;
+  cursor:pointer;
 }
 
 /* MODAL */
 .modal{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.6);
+  background:rgba(0,0,0,0.5);
   display:flex;
   align-items:center;
   justify-content:center;
-  z-index:2000;
 }
 .modal-box{
-  background:var(--box);
-  padding:22px;
-  border-radius:18px;
+  background:var(--bg);
+  padding:20px;
+  border-radius:20px;
   width:90%;
   max-width:320px;
-  text-align:center;
-}
-.modal-box input{
-  width:100%;
-  padding:12px;
-  margin-top:12px;
-  border-radius:999px;
-  border:1px solid var(--border);
-}
-.modal-box button{
-  width:100%;
-  margin-top:12px;
-  padding:12px;
-  border-radius:999px;
-  border:none;
-  background:var(--accent);
-  font-weight:700;
 }
 </style>
 </head>
 
 <body>
 
-<div class="overlay" id="overlay"></div>
+<!-- MENU -->
 <div class="menu" id="menu">
-  <h3>Menu</h3>
-  <button id="roomsBtn">Chat Rooms</button>
-  <button id="privateBtn">Private Group</button>
-  <button id="themeBtn">Theme</button>
-  <button id="closeMenuBtn">Close</button>
+  <button onclick="goHome()">🏠 Home</button>
+  <button onclick="showRooms()">💬 Chat Rooms</button>
+  <button onclick="showThemes()">🎨 Theme</button>
+  <button onclick="closeMenu()">❌ Close</button>
 </div>
 
+<!-- HEADER -->
 <div class="header">
-  <div class="menu-btn" id="menuBtn">☰</div>
-  <strong>UNI-CHAT</strong>
+  <span class="icon hidden" id="backBtn" onclick="goHome()">←</span>
+  <span class="icon" onclick="openMenu()">☰</span>
+  <strong id="title">UNI-CHAT</strong>
 </div>
 
-<div class="home" id="home">
-  <h1>UNI-CHAT</h1>
-  <p>Simple • Anonymous • Stable</p>
+<!-- HOME -->
+<div class="screen" id="home">
+  <h3>Available Chat Rooms</h3>
+  <div class="card" onclick="openChat('Global Chat')">🌍 Global Chat</div>
+  <div class="card" onclick="openChat('College Chat')">🎓 College Chat</div>
+  <div class="card" onclick="openChat('Random Chat')">💬 Random Chat</div>
+  <div class="card" onclick="openChat('Tech Chat')">💻 Tech Chat</div>
 </div>
 
-<div class="chat" id="chat">
-  <div class="chat-header">
-    <button id="chatBack">←</button>
-    <strong id="chatTitle"></strong>
-  </div>
-  <div class="chat-messages" id="messages"></div>
-  <div class="chat-input">
+<!-- CHAT -->
+<div class="screen hidden" id="chat">
+  <div class="chat-box" id="messages"></div>
+  <div class="input-row">
     <input id="msgInput" placeholder="Type message…">
-    <button id="sendBtn">➤</button>
+    <button class="send" onclick="sendMsg()">Send</button>
   </div>
 </div>
 
-<div class="modal" id="userModal">
+<!-- THEME PANEL -->
+<div class="screen hidden" id="themes">
+  <h3>Choose Theme</h3>
+  <div class="card" onclick="setTheme('')">Light</div>
+  <div class="card" onclick="setTheme('dark')">Dark</div>
+  <div class="card" onclick="setTheme('pink')">Pink</div>
+  <div class="card" onclick="setTheme('green')">Green</div>
+</div>
+
+<!-- WELCOME MODAL -->
+<div class="modal" id="welcome">
   <div class="modal-box">
-    <h2>Welcome to UNI-CHAT</h2>
+    <h3>Welcome to UNI-CHAT</h3>
     <p>Choose your username</p>
-    <input id="usernameInput" placeholder="username">
-    <button id="saveUserBtn">Continue</button>
+    <input id="usernameInput" placeholder="Username">
+    <button class="send" onclick="saveUser()">Continue</button>
   </div>
 </div>
 
 <script>
-const menu=document.getElementById('menu');
-const overlay=document.getElementById('overlay');
+let currentRoom='';
 const home=document.getElementById('home');
 const chat=document.getElementById('chat');
+const themes=document.getElementById('themes');
+const backBtn=document.getElementById('backBtn');
+const title=document.getElementById('title');
+const menu=document.getElementById('menu');
 const messages=document.getElementById('messages');
 
-function openMenu(){
-  menu.classList.add('open');
-  overlay.classList.add('show');
-}
-function closeMenu(){
-  menu.classList.remove('open');
-  overlay.classList.remove('show');
+function openMenu(){menu.classList.add('open')}
+function closeMenu(){menu.classList.remove('open')}
+
+function goHome(){
+  chat.classList.add('hidden');
+  themes.classList.add('hidden');
+  home.classList.remove('hidden');
+  backBtn.classList.add('hidden');
+  title.innerText='UNI-CHAT';
 }
 
-function openChat(name){
-  home.style.display='none';
-  chat.classList.add('active');
-  document.getElementById('chatTitle').textContent=name;
-  messages.innerHTML='';
+function showRooms(){
+  goHome();
   closeMenu();
 }
 
-function exitChat(){
-  chat.classList.remove('active');
-  home.style.display='block';
+function showThemes(){
+  home.classList.add('hidden');
+  chat.classList.add('hidden');
+  themes.classList.remove('hidden');
+  backBtn.classList.remove('hidden');
+  title.innerText='Themes';
+  closeMenu();
 }
 
-function sendMessage(){
+function openChat(room){
+  currentRoom=room;
+  home.classList.add('hidden');
+  chat.classList.remove('hidden');
+  backBtn.classList.remove('hidden');
+  title.innerText=room;
+  messages.innerHTML='';
+}
+
+function sendMsg(){
   const input=document.getElementById('msgInput');
-  const text=input.value.trim();
-  if(!text) return;
-
+  if(!input.value) return;
   const user=localStorage.getItem('username');
-  const time=new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-
-  const msg=document.createElement('div');
-  msg.className='msg me';
-  msg.innerHTML=`<div class="meta">${user} · ${time}</div><div>${text}</div>`;
-
-  messages.appendChild(msg);
-  messages.scrollTop=messages.scrollHeight;
+  const time=new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+  messages.innerHTML+=
+    `<div class="msg"><b>${user}</b><br>${input.value}<br><small>${time}</small></div>`;
   input.value='';
-}
-
-function setTheme(t){
-  document.body.className=t==='light'?'':t;
-  localStorage.setItem('theme',t);
+  messages.scrollTop=messages.scrollHeight;
 }
 
 function saveUser(){
-  const v=usernameInput.value.trim();
-  if(!v) return;
-  localStorage.setItem('username',v);
-  userModal.style.display='none';
+  const u=document.getElementById('usernameInput').value.trim();
+  if(!u) return;
+  localStorage.setItem('username',u);
+  document.getElementById('welcome').style.display='none';
 }
 
-/* EVENTS */
-menuBtn.onclick=openMenu;
-overlay.onclick=closeMenu;
-closeMenuBtn.onclick=closeMenu;
-chatBack.onclick=exitChat;
-sendBtn.onclick=sendMessage;
-saveUserBtn.onclick=saveUser;
+function setTheme(t){
+  document.body.className=t;
+  localStorage.setItem('theme',t);
+}
 
-roomsBtn.onclick=()=>openChat('Global Chat');
-privateBtn.onclick=()=>{
-  const code=Math.random().toString(36).slice(2,8).toUpperCase();
-  openChat('Private • '+code);
-};
-themeBtn.onclick=()=>{
-  const t=prompt('Theme: light / dark / pink / green');
-  if(t) setTheme(t);
-};
-
-/* INIT */
-if(localStorage.getItem('username')) userModal.style.display='none';
+if(!localStorage.getItem('username')){
+  document.getElementById('welcome').style.display='flex';
+}
 const savedTheme=localStorage.getItem('theme');
-if(savedTheme) setTheme(savedTheme);
+if(savedTheme) document.body.className=savedTheme;
 </script>
 
 </body>
