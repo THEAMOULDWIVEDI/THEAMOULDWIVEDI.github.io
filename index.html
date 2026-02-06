@@ -5,42 +5,76 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>UNI-CHAT</title>
 
-  <script>
-const buttons = document.querySelectorAll('.theme-btn');
-const savedTheme = localStorage.getItem('theme') || 'light';
-
-applyTheme(savedTheme);
-
-function setTheme(theme) {
-  applyTheme(theme);
-  localStorage.setItem('theme', theme);
-}
-
-function applyTheme(theme) {
-  // reset body class
-  document.body.className = theme === 'light' ? '' : theme;
-
-  // reset buttons
-  buttons.forEach(btn => btn.classList.remove('active'));
-
-  // activate correct button
-  buttons.forEach(btn => {
-    if (btn.innerText.toLowerCase() === theme) {
-      btn.classList.add('active');
+  <style>
+    :root {
+      --bg: #f5f5f5;
+      --text: #000;
+      --box: #fff;
+      --border: #ccc;
     }
-  });
-}
 
-function saveUsername() {
-  const name = document.querySelector('input').value.trim();
-  if (!name) {
-    alert('Enter username');
-    return;
-  }
-  localStorage.setItem('username', name);
-  alert('Saved: ' + name);
-}
-  </script>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    h1, p {
+      text-align: center;
+    }
+
+    input, button {
+      display: block;
+      width: 90%;
+      max-width: 300px;
+      margin: 10px auto;
+      padding: 12px;
+      font-size: 16px;
+      background: var(--box);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+    }
+
+    button {
+      cursor: pointer;
+      border-radius: 999px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    button:hover {
+      transform: scale(1.02);
+      opacity: 0.95;
+    }
+
+    .theme-btn.active {
+      outline: 2px solid var(--border);
+    }
+
+    /* THEMES */
+    body.dark {
+      --bg: #121212;
+      --text: #fff;
+      --box: #1e1e1e;
+      --border: #333;
+    }
+
+    body.pink {
+      --bg: #ffe6f0;
+      --text: #000;
+      --box: #fff0f7;
+      --border: #ff99c8;
+    }
+
+    body.green {
+      --bg: #e6fff2;
+      --text: #000;
+      --box: #f0fff8;
+      --border: #66cc99;
+    }
+  </style>
 </head>
 
 <body>
@@ -55,19 +89,20 @@ function saveUsername() {
   </div>
 
   <input placeholder="username">
-  <button onclick="saveUsername()">Enter</button>
+  <button id="enterBtn">Enter</button>
 
   <script>
     const buttons = document.querySelectorAll('.theme-btn');
+    const input = document.querySelector('input');
+    const enterBtn = document.getElementById('enterBtn');
 
     function applyTheme(theme) {
-  // Light = no class
-  document.body.className = theme === 'light' ? '' : theme;
-  localStorage.setItem('theme', theme);
+      document.body.className = theme === 'light' ? '' : theme;
+      localStorage.setItem('theme', theme);
 
-  buttons.forEach(btn => btn.classList.remove('active'));
-  const activeBtn = [...buttons].find(b => b.dataset.theme === theme);
-  if (activeBtn) activeBtn.classList.add('active');
+      buttons.forEach(btn => btn.classList.remove('active'));
+      const activeBtn = [...buttons].find(b => b.dataset.theme === theme);
+      if (activeBtn) activeBtn.classList.add('active');
     }
 
     buttons.forEach(btn => {
@@ -79,8 +114,8 @@ function saveUsername() {
     const savedTheme = localStorage.getItem('theme') || 'light';
     applyTheme(savedTheme);
 
-    function .saveUsername() {
-      const name = document.querySelector('input').value.trim();
+    function saveUsername() {
+      const name = input.value.trim();
       if (!name) {
         alert('Enter username');
         return;
@@ -88,7 +123,8 @@ function saveUsername() {
       localStorage.setItem('username', name);
       alert('Saved: ' + name);
     }
+
+    enterBtn.addEventListener('click', saveUsername);
   </script>
 </body>
 </html>
-
