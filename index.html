@@ -6,174 +6,161 @@
 <title>UNI-CHAT</title>
 
 <style>
-:root {
-  --bg: #f0f2f5;
-  --surface: #ffffff;
-  --text: #1c1e21;
-  --border: #ddd;
-  --accent: #0084ff;
+:root{
+  --bg:#f0f2f5;
+  --surface:#ffffff;
+  --text:#1c1e21;
+  --border:#dddddd;
+  --accent:#0084ff;
 }
 
-[data-theme="dark"] {
-  --bg: #121212;
-  --surface: #1e1e1e;
-  --text: #ffffff;
-  --border: #333;
-  --accent: #bb86fc;
+[data-theme="dark"]{
+  --bg:#121212;
+  --surface:#1e1e1e;
+  --text:#ffffff;
+  --border:#333333;
+  --accent:#bb86fc;
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: system-ui, Arial;
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:system-ui, Arial, sans-serif;
 }
 
-body {
-  background: var(--bg);
-  color: var(--text);
-  height: 100vh;
+body{
+  background:var(--bg);
+  color:var(--text);
+  height:100vh;
 }
 
-#app {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
+#app{
+  height:100vh;
+  display:flex;
+  flex-direction:column;
 }
 
 /* HEADER */
-header {
-  background: var(--surface);
-  padding: 14px;
-  display: flex;
-  align-items: center;
-  border-bottom: 1px solid var(--border);
+header{
+  background:var(--surface);
+  padding:14px;
+  display:flex;
+  align-items:center;
+  border-bottom:1px solid var(--border);
 }
 
-.icon {
-  font-size: 22px;
-  cursor: pointer;
+.icon{
+  font-size:22px;
+  cursor:pointer;
 }
 
-.title {
-  flex: 1;
-  text-align: center;
-  font-weight: bold;
+.title{
+  flex:1;
+  text-align:center;
+  font-weight:600;
 }
 
 /* SCREENS */
-.screen {
-  flex: 1;
-  display: none;
-  padding: 20px;
-  overflow-y: auto;
+.screen{
+  flex:1;
+  display:none;
+  padding:20px;
+  overflow-y:auto;
 }
-
-.screen.active {
-  display: block;
-}
+.screen.active{display:block}
 
 /* ROOMS */
-.room {
-  background: var(--surface);
-  padding: 16px;
-  border-radius: 14px;
-  border: 1px solid var(--border);
-  margin-bottom: 12px;
-  cursor: pointer;
+.room{
+  background:var(--surface);
+  padding:16px;
+  border-radius:16px;
+  border:1px solid var(--border);
+  margin-bottom:12px;
+  cursor:pointer;
 }
 
 /* CHAT */
-#messages {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+#messages{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
 }
-
-.msg {
-  max-width: 80%;
-  padding: 10px 14px;
-  border-radius: 16px;
-  background: var(--border);
+.msg{
+  max-width:80%;
+  padding:12px 14px;
+  border-radius:16px;
+  background:var(--border);
 }
-
-.msg.own {
-  align-self: flex-end;
-  background: var(--accent);
-  color: #fff;
+.msg.own{
+  align-self:flex-end;
+  background:var(--accent);
+  color:#fff;
 }
-
-small {
-  opacity: 0.7;
-  font-size: 11px;
+small{
+  opacity:.7;
+  font-size:11px;
 }
 
 /* INPUT */
-.input-row {
-  display: flex;
-  gap: 10px;
-  margin-top: 12px;
+.input-row{
+  display:flex;
+  gap:10px;
+  margin-top:12px;
 }
-
-input {
-  flex: 1;
-  padding: 12px;
-  border-radius: 20px;
-  border: 1px solid var(--border);
-  background: var(--bg);
-  color: var(--text);
+input{
+  flex:1;
+  padding:12px;
+  border-radius:20px;
+  border:1px solid var(--border);
+  background:var(--bg);
+  color:var(--text);
 }
-
-button {
-  padding: 12px 18px;
-  border-radius: 20px;
-  border: none;
-  background: var(--accent);
-  color: #fff;
-  cursor: pointer;
+button{
+  padding:12px 18px;
+  border-radius:20px;
+  border:none;
+  background:var(--accent);
+  color:#fff;
+  cursor:pointer;
 }
 
 /* MENU */
-.menu {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 250px;
-  height: 100%;
-  background: var(--surface);
-  transform: translateX(-100%);
-  transition: 0.3s;
-  padding: 20px;
-  z-index: 100;
+.menu{
+  position:fixed;
+  top:0;
+  left:0;
+  width:250px;
+  height:100%;
+  background:var(--surface);
+  transform:translateX(-100%);
+  transition:.3s;
+  padding:20px;
+  z-index:100;
 }
-
-.menu.open {
-  transform: translateX(0);
-}
-
-.menu div {
-  margin: 15px 0;
-  cursor: pointer;
+.menu.open{transform:translateX(0)}
+.menu div{
+  margin:15px 0;
+  cursor:pointer;
 }
 
 /* MODAL */
-.modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 200;
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.6);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:200;
 }
-
-.modal-box {
-  background: var(--surface);
-  padding: 25px;
-  border-radius: 16px;
-  width: 90%;
-  max-width: 320px;
-  text-align: center;
+.modal-box{
+  background:var(--surface);
+  padding:25px;
+  border-radius:18px;
+  width:90%;
+  max-width:320px;
+  text-align:center;
 }
 </style>
 </head>
@@ -185,12 +172,13 @@ button {
 <div class="menu" id="menu">
   <div onclick="goHome()">🏠 Home</div>
   <div onclick="toggleTheme()">🌓 Toggle Theme</div>
-  <div onclick="toggleMenu()">❌ Close</div>
+  <div onclick="clearUsername()">🗑 Clear Username</div>
+  <div onclick="closeMenu()">❌ Close</div>
 </div>
 
 <!-- HEADER -->
 <header>
-  <span class="icon" onclick="toggleMenu()">☰</span>
+  <span class="icon" onclick="openMenu()">☰</span>
   <span class="icon" id="back" onclick="goHome()" style="display:none">←</span>
   <div class="title" id="title">UNI-CHAT</div>
 </header>
@@ -207,7 +195,7 @@ button {
 <div class="screen" id="chat">
   <div id="messages"></div>
   <div class="input-row">
-    <input id="msgInput" placeholder="Type a message..." />
+    <input id="msgInput" placeholder="Type a message…" />
     <button onclick="sendMsg()">Send</button>
   </div>
 </div>
@@ -215,7 +203,7 @@ button {
 <!-- USERNAME MODAL -->
 <div class="modal" id="userModal">
   <div class="modal-box">
-    <h3>Welcome</h3><br>
+    <h3>Welcome to UNI-CHAT</h3><br>
     <input id="userInput" placeholder="Username" />
     <br><br>
     <button onclick="saveUser()">Continue</button>
@@ -227,7 +215,6 @@ button {
 <script>
 /* STATE */
 let USER = localStorage.getItem('username') || '';
-let CURRENT_ROOM = '';
 
 const home = document.getElementById('home');
 const chat = document.getElementById('chat');
@@ -238,75 +225,82 @@ const messages = document.getElementById('messages');
 const userModal = document.getElementById('userModal');
 
 /* INIT */
-if (!USER) {
-  userModal.style.display = 'flex';
+if(!USER){
+  userModal.style.display='flex';
+}
+if(localStorage.getItem('theme')==='dark'){
+  document.body.setAttribute('data-theme','dark');
 }
 
-if (localStorage.getItem('theme') === 'dark') {
-  document.body.setAttribute('data-theme', 'dark');
+/* MENU CONTROL (FIXED) */
+function openMenu(){
+  menu.classList.add('open');
+}
+function closeMenu(){
+  menu.classList.remove('open');
 }
 
-/* MENU */
-function toggleMenu() {
-  menu.classList.toggle('open');
-}
-
-/* NAV */
-function openChat(room) {
-  CURRENT_ROOM = room;
+/* NAVIGATION */
+function openChat(room){
   home.classList.remove('active');
   chat.classList.add('active');
   title.innerText = room;
   backBtn.style.display = 'inline';
   messages.innerHTML = '';
-  menu.classList.remove('open');
+  closeMenu();
 }
 
-function goHome() {
+function goHome(){
   chat.classList.remove('active');
   home.classList.add('active');
   title.innerText = 'UNI-CHAT';
   backBtn.style.display = 'none';
-  menu.classList.remove('open');
+  closeMenu();
 }
 
 /* CHAT */
-function sendMsg() {
+function sendMsg(){
   const input = document.getElementById('msgInput');
   const text = input.value.trim();
-  if (!text) return;
+  if(!text) return;
 
   const msg = document.createElement('div');
   msg.className = 'msg own';
   msg.innerHTML = `
     <b>${USER}</b><br>
     ${text}<br>
-    <small>${new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</small>
+    <small>${new Date().toLocaleTimeString([],{
+      hour:'2-digit',minute:'2-digit'
+    })}</small>
   `;
-
   messages.appendChild(msg);
   messages.scrollTop = messages.scrollHeight;
   input.value = '';
 }
 
 /* USER */
-function saveUser() {
+function saveUser(){
   const val = document.getElementById('userInput').value.trim();
-  if (!val) return;
+  if(!val) return;
   USER = val;
   localStorage.setItem('username', val);
   userModal.style.display = 'none';
 }
 
+function clearUsername(){
+  localStorage.removeItem('username');
+  location.reload();
+}
+
 /* THEME */
-function toggleTheme() {
-  const isDark = document.body.getAttribute('data-theme') === 'dark';
-  if (isDark) {
+function toggleTheme(){
+  const dark = document.body.getAttribute('data-theme')==='dark';
+  if(dark){
     document.body.removeAttribute('data-theme');
-    localStorage.setItem('theme', 'light');
-  } else {
-    document.body.setAttribute('data-theme', 'dark');
-    localStorage.setItem('theme', 'dark');
+    localStorage.setItem('theme','light');
+  }else{
+    document.body.setAttribute('data-theme','dark');
+    localStorage.setItem('theme','dark');
   }
 }
 </script>
