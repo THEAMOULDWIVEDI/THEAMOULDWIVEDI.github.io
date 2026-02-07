@@ -6,6 +6,7 @@
 <title>UNI-CHAT</title>
 
 <style>
+/* ===== THEMES ===== */
 :root{
   --bg:#f0f2f5;
   --surface:#ffffff;
@@ -22,6 +23,23 @@
   --accent:#bb86fc;
 }
 
+[data-theme="pink"]{
+  --bg:#ffe6f0;
+  --surface:#fff0f7;
+  --text:#1c1e21;
+  --border:#ffb6d5;
+  --accent:#ff4f9a;
+}
+
+[data-theme="green"]{
+  --bg:#e6fff2;
+  --surface:#f0fff8;
+  --text:#0f2f1f;
+  --border:#66cc99;
+  --accent:#2e8b57;
+}
+
+/* ===== BASE ===== */
 *{
   box-sizing:border-box;
   margin:0;
@@ -171,7 +189,10 @@ button{
 <!-- MENU -->
 <div class="menu" id="menu">
   <div onclick="goHome()">🏠 Home</div>
-  <div onclick="toggleTheme()">🌓 Toggle Theme</div>
+  <div onclick="setTheme('light')">🌕 Light Theme</div>
+  <div onclick="setTheme('dark')">🌑 Dark Theme</div>
+  <div onclick="setTheme('pink')">🌸 Pink Theme</div>
+  <div onclick="setTheme('green')">🌿 Green Theme</div>
   <div onclick="clearUsername()">🗑 Clear Username</div>
   <div onclick="closeMenu()">❌ Close</div>
 </div>
@@ -228,17 +249,15 @@ const userModal = document.getElementById('userModal');
 if(!USER){
   userModal.style.display='flex';
 }
-if(localStorage.getItem('theme')==='dark'){
-  document.body.setAttribute('data-theme','dark');
+
+const savedTheme = localStorage.getItem('theme');
+if(savedTheme){
+  document.body.setAttribute('data-theme', savedTheme);
 }
 
-/* MENU CONTROL (FIXED) */
-function openMenu(){
-  menu.classList.add('open');
-}
-function closeMenu(){
-  menu.classList.remove('open');
-}
+/* MENU */
+function openMenu(){ menu.classList.add('open'); }
+function closeMenu(){ menu.classList.remove('open'); }
 
 /* NAVIGATION */
 function openChat(room){
@@ -270,12 +289,12 @@ function sendMsg(){
     <b>${USER}</b><br>
     ${text}<br>
     <small>${new Date().toLocaleTimeString([],{
-      hour:'2-digit',minute:'2-digit'
+      hour:'2-digit', minute:'2-digit'
     })}</small>
   `;
   messages.appendChild(msg);
   messages.scrollTop = messages.scrollHeight;
-  input.value = '';
+  input.value='';
 }
 
 /* USER */
@@ -284,7 +303,7 @@ function saveUser(){
   if(!val) return;
   USER = val;
   localStorage.setItem('username', val);
-  userModal.style.display = 'none';
+  userModal.style.display='none';
 }
 
 function clearUsername(){
@@ -292,15 +311,14 @@ function clearUsername(){
   location.reload();
 }
 
-/* THEME */
-function toggleTheme(){
-  const dark = document.body.getAttribute('data-theme')==='dark';
-  if(dark){
+/* THEMES */
+function setTheme(theme){
+  if(theme === 'light'){
     document.body.removeAttribute('data-theme');
     localStorage.setItem('theme','light');
   }else{
-    document.body.setAttribute('data-theme','dark');
-    localStorage.setItem('theme','dark');
+    document.body.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
   }
 }
 </script>
