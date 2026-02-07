@@ -75,8 +75,6 @@ header{
   background:var(--accent);
   color:#fff;
 }
-.msg b{font-size:13px}
-.msg small{display:block;font-size:11px;opacity:.7}
 
 .input-row{display:flex;gap:10px;margin-top:12px}
 input{
@@ -143,7 +141,7 @@ button{
   <div class="card" onclick="openRoom('🌍 Global Chat')">🌍 Global Chat</div>
   <div class="card" onclick="openRoom('🎓 College Chat')">🎓 College Chat</div>
   <div class="card" onclick="openRoom('💻 Tech Chat')">💻 Tech Chat</div>
-  <div class="card" onclick="openPrivateGroup()">🔐 Private Group (Code)</div>
+  <div class="card" onclick="openPrivate()">🔐 Private Group</div>
   <div class="card" onclick="openPersonal()">👤 Personal Chat</div>
 </div>
 
@@ -163,70 +161,77 @@ button{
   </div>
 </div>
 
-<div class="modal" id="privateModal">
-  <div class="modal-box">
-    <h3>Private Group</h3><br>
-    <input id="groupCode" placeholder="Enter group code"><br><br>
-    <button onclick="joinPrivateGroup()">Join</button>
-  </div>
 </div>
 
-<div class="modal" id="personalModal">
-  <div class="modal-box">
-    <h3>Personal Chat</h3>
-    <p style="opacity:.7;font-size:13px;margin:10px 0">
-      Random matching.<br>Chat starts if both accept.
-    </p>
-    <button onclick="startPersonal()">Find Someone</button>
-  </div>
-</div>
+<script>
+let USER = localStorage.getItem("username") || "";
 
-</div>
+const home = document.getElementById("home");
+const chat = document.getElementById("chat");
+const title = document.getElementById("title");
+const backBtn = document.getElementById("backBtn");
+const menu = document.getElementById("menu");
+const messages = document.getElementById("messages");
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  query,
-  orderBy,
-  onSnapshot,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+if(!USER){
+  document.getElementById("userModal").style.display="flex";
+}
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDK6cIyZqWrn7I1XXGlfnAKT4W7jrN0zus",
-  authDomain: "uni-chat-48775.firebaseapp.com",
-  projectId: "uni-chat-48775",
-  storageBucket: "uni-chat-48775.firebasestorage.app",
-  messagingSenderId: "863796936059",
-  appId: "1:863796936059:web:87a81183076a2bf64e11de"
-};
+function openMenu(){menu.classList.add("open")}
+function closeMenu(){menu.classList.remove("open")}
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+function openRoom(name){
+  home.classList.remove("active");
+  chat.classList.add("active");
+  title.innerText=name;
+  backBtn.style.display="block";
+  messages.innerHTML='<div class="empty">No messages yet 👋</div>';
+  closeMenu();
+}
 
-/* TEMP placeholders — real logic comes next */
-window.sendMsg = () => alert("Firebase connected. Next step: real messages.");
-window.openMenu = () => document.getElementById("menu").classList.add("open");
-window.closeMenu = () => document.getElementById("menu").classList.remove("open");
-window.goHome = () => location.reload();
-window.openRoom = (name) => {
-  document.getElementById("home").classList.remove("active");
-  document.getElementById("chat").classList.add("active");
-  document.getElementById("title").innerText = name;
-  document.getElementById("backBtn").style.display = "block";
-};
-window.openPrivateGroup = () => {};
-window.openPersonal = () => {};
-window.joinPrivateGroup = () => {};
-window.startPersonal = () => {};
-window.saveUser = () => {};
-window.clearUsername = () => {};
-window.setTheme = () => {};
+function goHome(){
+  chat.classList.remove("active");
+  home.classList.add("active");
+  title.innerText="UNI-CHAT";
+  backBtn.style.display="none";
+  closeMenu();
+}
+
+function sendMsg(){
+  const input=document.getElementById("msgInput");
+  const text=input.value.trim();
+  if(!text)return;
+  const empty=document.querySelector(".empty");
+  if(empty)empty.remove();
+  const msg=document.createElement("div");
+  msg.className="msg own";
+  msg.innerHTML=`<b>${USER}</b><br>${text}`;
+  messages.appendChild(msg);
+  input.value="";
+}
+
+function saveUser(){
+  const v=document.getElementById("userInput").value.trim();
+  if(!v)return;
+  USER=v;
+  localStorage.setItem("username",v);
+  document.getElementById("userModal").style.display="none";
+}
+
+function clearUsername(){
+  localStorage.removeItem("username");
+  location.reload();
+}
+
+function setTheme(t){
+  if(t==="light")document.body.removeAttribute("data-theme");
+  else document.body.setAttribute("data-theme",t);
+  localStorage.setItem("theme",t);
+}
+
+function openPrivate(){openRoom("🔐 Private Group")}
+function openPersonal(){openRoom("👤 Personal Chat")}
 </script>
 
 </body>
 </html>
-
