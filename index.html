@@ -145,16 +145,16 @@ button{
 
 <!-- HEADER -->
 <header>
-  <span class="icon" id="backBtn" onclick="goHome()" style="display:none">⬅</span>
+  <span class="icon" id="backBtn" onclick="goHome()" style="display:none">←</span>
   <div class="title" id="title">UNI-CHAT</div>
   <span class="icon" onclick="openMenu()">☰</span>
 </header>
 
 <!-- HOME -->
 <div class="screen active" id="home">
-  <div class="card" onclick="openRoom('Global Chat')">🌍 Global Chat</div>
-  <div class="card" onclick="openRoom('College Chat')">🎓 College Chat</div>
-  <div class="card" onclick="openRoom('Tech Chat')">💻 Tech Chat</div>
+  <div class="card" onclick="openRoom('🌍 Global Chat')">🌍 Global Chat</div>
+  <div class="card" onclick="openRoom('🎓 College Chat')">🎓 College Chat</div>
+  <div class="card" onclick="openRoom('💻 Tech Chat')">💻 Tech Chat</div>
   <div class="card" onclick="openPrivateGroup()">🔐 Private Group (Code)</div>
   <div class="card" onclick="openPersonal()">👤 Personal Chat</div>
 </div>
@@ -191,8 +191,7 @@ button{
   <div class="modal-box">
     <h3>Personal Chat</h3>
     <p style="opacity:.7;font-size:13px;margin:10px 0">
-      You will be matched randomly.<br>
-      Chat starts only if both accept.
+      Random matching.<br>Chat starts if both accept.
     </p>
     <button onclick="startPersonal()">Find Someone</button>
   </div>
@@ -202,6 +201,7 @@ button{
 
 <script>
 let USER = localStorage.getItem('username') || '';
+
 const home = document.getElementById('home');
 const chat = document.getElementById('chat');
 const title = document.getElementById('title');
@@ -213,9 +213,9 @@ if(!USER){
   document.getElementById('userModal').style.display='flex';
 }
 
-const theme = localStorage.getItem('theme');
-if(theme && theme!=='light'){
-  document.body.setAttribute('data-theme',theme);
+const savedTheme = localStorage.getItem('theme');
+if(savedTheme && savedTheme!=='light'){
+  document.body.setAttribute('data-theme',savedTheme);
 }
 
 /* MENU */
@@ -224,12 +224,12 @@ function closeMenu(){menu.classList.remove('open')}
 
 /* NAV */
 function openRoom(name){
+  closeMenu();
   home.classList.remove('active');
   chat.classList.add('active');
   title.innerText=name;
   backBtn.style.display='block';
   resetChat();
-  closeMenu();
 }
 function goHome(){
   chat.classList.remove('active');
@@ -259,6 +259,9 @@ function sendMsg(){
   messages.scrollTop=messages.scrollHeight;
   input.value='';
 }
+document.getElementById('msgInput').addEventListener('keydown',e=>{
+  if(e.key==='Enter')sendMsg();
+});
 
 /* USER */
 function saveUser(){
@@ -281,7 +284,7 @@ function joinPrivateGroup(){
   const code=document.getElementById('groupCode').value.trim();
   if(!code)return;
   document.getElementById('privateModal').style.display='none';
-  openRoom('Private Group • '+code);
+  openRoom('🔐 Private Group • '+code);
 }
 
 /* PERSONAL CHAT */
@@ -290,7 +293,7 @@ function openPersonal(){
 }
 function startPersonal(){
   document.getElementById('personalModal').style.display='none';
-  openRoom('Personal Chat');
+  openRoom('👤 Personal Chat');
 }
 
 /* THEME */
