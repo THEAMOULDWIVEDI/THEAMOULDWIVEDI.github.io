@@ -6,6 +6,7 @@
 <title>UNI-CHAT</title>
 
 <style>
+/* ===== THEMES ===== */
 :root{
   --bg:#f0f2f5;
   --surface:#ffffff;
@@ -35,10 +36,12 @@
   --accent:#2e8b57;
 }
 
+/* ===== BASE ===== */
 *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,Arial}
 body{background:var(--bg);color:var(--text);height:100vh}
 #app{height:100vh;display:flex;flex-direction:column}
 
+/* ===== HEADER ===== */
 header{
   background:var(--surface);
   padding:14px;
@@ -50,9 +53,11 @@ header{
 .icon{text-align:center;font-size:22px;cursor:pointer}
 .title{text-align:center;font-weight:600}
 
+/* ===== SCREENS ===== */
 .screen{flex:1;display:none;padding:20px;overflow-y:auto}
 .screen.active{display:block}
 
+/* ===== CARDS ===== */
 .card{
   background:var(--surface);
   padding:16px;
@@ -62,6 +67,7 @@ header{
   cursor:pointer;
 }
 
+/* ===== CHAT ===== */
 #messages{display:flex;flex-direction:column;gap:10px}
 .empty{text-align:center;opacity:.6;margin-top:40px}
 .msg{
@@ -75,7 +81,10 @@ header{
   background:var(--accent);
   color:#fff;
 }
+.msg b{font-size:13px}
+.msg small{display:block;font-size:11px;opacity:.7}
 
+/* ===== INPUT ===== */
 .input-row{display:flex;gap:10px;margin-top:12px}
 input{
   flex:1;padding:12px;border-radius:20px;
@@ -87,6 +96,7 @@ button{
   border:none;background:var(--accent);color:#fff;cursor:pointer
 }
 
+/* ===== MENU ===== */
 .menu{
   position:fixed;
   top:0;right:0;
@@ -100,6 +110,7 @@ button{
 .menu.open{transform:translateX(0)}
 .menu div{margin:15px 0;cursor:pointer}
 
+/* ===== MODALS ===== */
 .modal{
   position:fixed;inset:0;
   background:rgba(0,0,0,.6);
@@ -121,6 +132,7 @@ button{
 <body>
 <div id="app">
 
+<!-- MENU -->
 <div class="menu" id="menu">
   <div onclick="goHome()">🏠 Home</div>
   <div onclick="setTheme('light')">🌕 Light</div>
@@ -131,20 +143,23 @@ button{
   <div onclick="closeMenu()">❌ Close</div>
 </div>
 
+<!-- HEADER -->
 <header>
-  <span class="icon" id="backBtn" onclick="goHome()" style="display:none">←</span>
+  <span class="icon" id="backBtn" onclick="goHome()" style="display:none">⬅</span>
   <div class="title" id="title">UNI-CHAT</div>
   <span class="icon" onclick="openMenu()">☰</span>
 </header>
 
+<!-- HOME -->
 <div class="screen active" id="home">
-  <div class="card" onclick="openRoom('🌍 Global Chat')">🌍 Global Chat</div>
-  <div class="card" onclick="openRoom('🎓 College Chat')">🎓 College Chat</div>
-  <div class="card" onclick="openRoom('💻 Tech Chat')">💻 Tech Chat</div>
-  <div class="card" onclick="openPrivate()">🔐 Private Group</div>
+  <div class="card" onclick="openRoom('Global Chat')">🌍 Global Chat</div>
+  <div class="card" onclick="openRoom('College Chat')">🎓 College Chat</div>
+  <div class="card" onclick="openRoom('Tech Chat')">💻 Tech Chat</div>
+  <div class="card" onclick="openPrivateGroup()">🔐 Private Group (Code)</div>
   <div class="card" onclick="openPersonal()">👤 Personal Chat</div>
 </div>
 
+<!-- CHAT -->
 <div class="screen" id="chat">
   <div id="messages"><div class="empty">No messages yet 👋</div></div>
   <div class="input-row">
@@ -153,6 +168,7 @@ button{
   </div>
 </div>
 
+<!-- USERNAME MODAL -->
 <div class="modal" id="userModal">
   <div class="modal-box">
     <h3>Welcome to UNI-CHAT</h3><br>
@@ -161,103 +177,129 @@ button{
   </div>
 </div>
 
+<!-- PRIVATE GROUP MODAL -->
+<div class="modal" id="privateModal">
+  <div class="modal-box">
+    <h3>Private Group</h3><br>
+    <input id="groupCode" placeholder="Enter group code"><br><br>
+    <button onclick="joinPrivateGroup()">Join</button>
+  </div>
+</div>
+
+<!-- PERSONAL CHAT MODAL -->
+<div class="modal" id="personalModal">
+  <div class="modal-box">
+    <h3>Personal Chat</h3>
+    <p style="opacity:.7;font-size:13px;margin:10px 0">
+      You will be matched randomly.<br>
+      Chat starts only if both accept.
+    </p>
+    <button onclick="startPersonal()">Find Someone</button>
+  </div>
+</div>
+
 </div>
 
 <script>
-let USER = localStorage.getItem("username") || "";
-
-const home = document.getElementById("home");
-const chat = document.getElementById("chat");
-const title = document.getElementById("title");
-const backBtn = document.getElementById("backBtn");
-const menu = document.getElementById("menu");
-const messages = document.getElementById("messages");
+let USER = localStorage.getItem('username') || '';
+const home = document.getElementById('home');
+const chat = document.getElementById('chat');
+const title = document.getElementById('title');
+const backBtn = document.getElementById('backBtn');
+const messages = document.getElementById('messages');
+const menu = document.getElementById('menu');
 
 if(!USER){
-  document.getElementById("userModal").style.display="flex";
+  document.getElementById('userModal').style.display='flex';
 }
 
-function openMenu(){menu.classList.add("open")}
-function closeMenu(){menu.classList.remove("open")}
-let CURRENT_ROOM = "";
-  const ROOM_MESSAGES = {};
+const theme = localStorage.getItem('theme');
+if(theme && theme!=='light'){
+  document.body.setAttribute('data-theme',theme);
+}
+
+/* MENU */
+function openMenu(){menu.classList.add('open')}
+function closeMenu(){menu.classList.remove('open')}
+
+/* NAV */
 function openRoom(name){
-  CURRENT_ROOM = name;
-  home.classList.remove("active");
-  chat.classList.add("active");
+  home.classList.remove('active');
+  chat.classList.add('active');
   title.innerText=name;
-  backBtn.style.display="block";
-  messages.innerHTML='<div class="empty">No messages yet 👋</div>';
+  backBtn.style.display='block';
+  resetChat();
   closeMenu();
 }
-
 function goHome(){
-  chat.classList.remove("active");
-  home.classList.add("active");
-  title.innerText="UNI-CHAT";
-  backBtn.style.display="none";
+  chat.classList.remove('active');
+  home.classList.add('active');
+  title.innerText='UNI-CHAT';
+  backBtn.style.display='none';
   closeMenu();
 }
 
+/* CHAT */
+function resetChat(){
+  messages.innerHTML='<div class="empty">No messages yet 👋</div>';
+}
 function sendMsg(){
-  const input = document.getElementById("msgInput");
-  const text = input.value.trim();
-  if(!text) return;
-
-  if(!ROOM_MESSAGES[CURRENT_ROOM]){
-    ROOM_MESSAGES[CURRENT_ROOM] = [];
-  }
-
-  ROOM_MESSAGES[CURRENT_ROOM].push({
-    user: USER,
-    text: text
-  });
-
-  renderMessages();
-  input.value = "";
+  const input=document.getElementById('msgInput');
+  const text=input.value.trim();
+  if(!text)return;
+  const empty=document.querySelector('.empty');
+  if(empty)empty.remove();
+  const msg=document.createElement('div');
+  msg.className='msg own';
+  msg.innerHTML=`<b>${USER}</b><br>${text}
+  <small>${new Date().toLocaleTimeString([],{
+    hour:'2-digit',minute:'2-digit'
+  })}</small>`;
+  messages.appendChild(msg);
+  messages.scrollTop=messages.scrollHeight;
+  input.value='';
 }
-}
-function renderMessages(){
-  messages.innerHTML = "";
 
-  const list = ROOM_MESSAGES[CURRENT_ROOM] || [];
-  if(list.length === 0){
-    messages.innerHTML = '<div class="empty">No messages yet 👋</div>';
-    return;
-  }
-
-  list.forEach(m=>{
-    const div = document.createElement("div");
-    div.className = "msg" + (m.user === USER ? " own" : "");
-    div.innerHTML = `<b>${m.user}</b><br>${m.text}`;
-    messages.appendChild(div);
-  });
-}
+/* USER */
 function saveUser(){
-  const v=document.getElementById("userInput").value.trim();
+  const v=document.getElementById('userInput').value.trim();
   if(!v)return;
   USER=v;
-  localStorage.setItem("username",v);
-  document.getElementById("userModal").style.display="none";
+  localStorage.setItem('username',v);
+  document.getElementById('userModal').style.display='none';
 }
-
 function clearUsername(){
-  localStorage.removeItem("username");
+  localStorage.removeItem('username');
   location.reload();
 }
 
-function setTheme(t){
-  if(t==="light")document.body.removeAttribute("data-theme");
-  else document.body.setAttribute("data-theme",t);
-  localStorage.setItem("theme",t);
+/* PRIVATE GROUP */
+function openPrivateGroup(){
+  document.getElementById('privateModal').style.display='flex';
+}
+function joinPrivateGroup(){
+  const code=document.getElementById('groupCode').value.trim();
+  if(!code)return;
+  document.getElementById('privateModal').style.display='none';
+  openRoom('Private Group • '+code);
 }
 
-function openPrivate(){openRoom("🔐 Private Group")}
-function openPersonal(){openRoom("👤 Personal Chat")}
+/* PERSONAL CHAT */
+function openPersonal(){
+  document.getElementById('personalModal').style.display='flex';
+}
+function startPersonal(){
+  document.getElementById('personalModal').style.display='none';
+  openRoom('Personal Chat');
+}
+
+/* THEME */
+function setTheme(t){
+  if(t==='light')document.body.removeAttribute('data-theme');
+  else document.body.setAttribute('data-theme',t);
+  localStorage.setItem('theme',t);
+}
 </script>
 
 </body>
 </html>
-
-
-
