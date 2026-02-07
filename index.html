@@ -179,7 +179,7 @@ if(!USER){
 
 function openMenu(){menu.classList.add("open")}
 function closeMenu(){menu.classList.remove("open")}
-
+let CURRENT_ROOM = "";
 function openRoom(name){
   home.classList.remove("active");
   chat.classList.add("active");
@@ -235,3 +235,4 @@ function openPersonal(){openRoom("👤 Personal Chat")}
 
 </body>
 </html>
+
