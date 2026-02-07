@@ -212,7 +212,12 @@ window.sendMsg = () => alert("Firebase connected. Next step: real messages.");
 window.openMenu = () => document.getElementById("menu").classList.add("open");
 window.closeMenu = () => document.getElementById("menu").classList.remove("open");
 window.goHome = () => location.reload();
-window.openRoom = () => {};
+window.openRoom = (name) => {
+  document.getElementById("home").classList.remove("active");
+  document.getElementById("chat").classList.add("active");
+  document.getElementById("title").innerText = name;
+  document.getElementById("backBtn").style.display = "block";
+};
 window.openPrivateGroup = () => {};
 window.openPersonal = () => {};
 window.joinPrivateGroup = () => {};
@@ -224,3 +229,4 @@ window.setTheme = () => {};
 
 </body>
 </html>
+
