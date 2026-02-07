@@ -181,6 +181,7 @@ function openMenu(){menu.classList.add("open")}
 function closeMenu(){menu.classList.remove("open")}
 let CURRENT_ROOM = "";
 function openRoom(name){
+  CURRENT_ROOM = name;
   home.classList.remove("active");
   chat.classList.add("active");
   title.innerText=name;
@@ -235,4 +236,5 @@ function openPersonal(){openRoom("👤 Personal Chat")}
 
 </body>
 </html>
+
 
