@@ -71,6 +71,8 @@ header{
 .icon{
   font-size:22px;
   cursor:pointer;
+  width:32px;
+  text-align:center;
 }
 
 .title{
@@ -104,6 +106,14 @@ header{
   flex-direction:column;
   gap:10px;
 }
+
+.empty-state{
+  text-align:center;
+  opacity:.6;
+  margin-top:40px;
+  font-size:14px;
+}
+
 .msg{
   max-width:80%;
   padding:12px 14px;
@@ -115,7 +125,10 @@ header{
   background:var(--accent);
   color:#fff;
 }
-small{
+.msg b{ font-size:13px }
+.msg small{
+  display:block;
+  margin-top:4px;
   opacity:.7;
   font-size:11px;
 }
@@ -189,18 +202,18 @@ button{
 <!-- MENU -->
 <div class="menu" id="menu">
   <div onclick="goHome()">🏠 Home</div>
-  <div onclick="setTheme('light')">🌕 Light Theme</div>
-  <div onclick="setTheme('dark')">🌑 Dark Theme</div>
-  <div onclick="setTheme('pink')">🌸 Pink Theme</div>
-  <div onclick="setTheme('green')">🌿 Green Theme</div>
+  <div onclick="setTheme('light')">🌕 Light</div>
+  <div onclick="setTheme('dark')">🌑 Dark</div>
+  <div onclick="setTheme('pink')">🌸 Pink</div>
+  <div onclick="setTheme('green')">🌿 Green</div>
   <div onclick="clearUsername()">🗑 Clear Username</div>
   <div onclick="closeMenu()">❌ Close</div>
 </div>
 
 <!-- HEADER -->
 <header>
-  <span class="icon" onclick="openMenu()">☰</span>
-  <span class="icon" id="back" onclick="goHome()" style="display:none">←</span>
+  <span class="icon" id="menuBtn" onclick="openMenu()">☰</span>
+  <span class="icon" id="backBtn" onclick="goHome()" style="display:none">←</span>
   <div class="title" id="title">UNI-CHAT</div>
 </header>
 
@@ -214,7 +227,9 @@ button{
 
 <!-- CHAT -->
 <div class="screen" id="chat">
-  <div id="messages"></div>
+  <div id="messages">
+    <div class="empty-state">No messages yet. Say hi 👋</div>
+  </div>
   <div class="input-row">
     <input id="msgInput" placeholder="Type a message…" />
     <button onclick="sendMsg()">Send</button>
@@ -234,24 +249,22 @@ button{
 </div>
 
 <script>
-/* STATE */
 let USER = localStorage.getItem('username') || '';
 
 const home = document.getElementById('home');
 const chat = document.getElementById('chat');
 const menu = document.getElementById('menu');
 const title = document.getElementById('title');
-const backBtn = document.getElementById('back');
+const menuBtn = document.getElementById('menuBtn');
+const backBtn = document.getElementById('backBtn');
 const messages = document.getElementById('messages');
 const userModal = document.getElementById('userModal');
 
 /* INIT */
-if(!USER){
-  userModal.style.display='flex';
-}
+if(!USER) userModal.style.display='flex';
 
 const savedTheme = localStorage.getItem('theme');
-if(savedTheme){
+if(savedTheme && savedTheme !== 'light'){
   document.body.setAttribute('data-theme', savedTheme);
 }
 
@@ -259,13 +272,16 @@ if(savedTheme){
 function openMenu(){ menu.classList.add('open'); }
 function closeMenu(){ menu.classList.remove('open'); }
 
-/* NAVIGATION */
+/* NAV */
 function openChat(room){
   home.classList.remove('active');
   chat.classList.add('active');
   title.innerText = room;
+
+  menuBtn.style.display = 'none';
   backBtn.style.display = 'inline';
-  messages.innerHTML = '';
+
+  messages.innerHTML = `<div class="empty-state">No messages yet. Say hi 👋</div>`;
   closeMenu();
 }
 
@@ -273,7 +289,10 @@ function goHome(){
   chat.classList.remove('active');
   home.classList.add('active');
   title.innerText = 'UNI-CHAT';
+
   backBtn.style.display = 'none';
+  menuBtn.style.display = 'inline';
+
   closeMenu();
 }
 
@@ -283,14 +302,15 @@ function sendMsg(){
   const text = input.value.trim();
   if(!text) return;
 
+  const empty = document.querySelector('.empty-state');
+  if(empty) empty.remove();
+
   const msg = document.createElement('div');
   msg.className = 'msg own';
   msg.innerHTML = `
-    <b>${USER}</b><br>
-    ${text}<br>
-    <small>${new Date().toLocaleTimeString([],{
-      hour:'2-digit', minute:'2-digit'
-    })}</small>
+    <b>${USER}</b>
+    <div>${text}</div>
+    <small>${new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</small>
   `;
   messages.appendChild(msg);
   messages.scrollTop = messages.scrollHeight;
@@ -315,11 +335,10 @@ function clearUsername(){
 function setTheme(theme){
   if(theme === 'light'){
     document.body.removeAttribute('data-theme');
-    localStorage.setItem('theme','light');
   }else{
     document.body.setAttribute('data-theme', theme);
-    localStorage.setItem('theme', theme);
   }
+  localStorage.setItem('theme', theme);
 }
 </script>
 
