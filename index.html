@@ -8,20 +8,32 @@
 <style>
 /* ===== THEMES ===== */
 :root{
-  --bg:#f0f2f5; --surface:#fff; --text:#1c1e21;
-  --border:#ddd; --accent:#0084ff;
+  --bg:#f0f2f5;
+  --surface:#ffffff;
+  --text:#1c1e21;
+  --border:#dddddd;
+  --accent:#0084ff;
 }
 [data-theme="dark"]{
-  --bg:#121212; --surface:#1e1e1e; --text:#fff;
-  --border:#333; --accent:#bb86fc;
+  --bg:#121212;
+  --surface:#1e1e1e;
+  --text:#ffffff;
+  --border:#333;
+  --accent:#bb86fc;
 }
 [data-theme="pink"]{
-  --bg:#ffe6f0; --surface:#fff0f7; --text:#1c1e21;
-  --border:#ffb6d5; --accent:#ff4f9a;
+  --bg:#ffe6f0;
+  --surface:#fff0f7;
+  --text:#1c1e21;
+  --border:#ffb6d5;
+  --accent:#ff4f9a;
 }
 [data-theme="green"]{
-  --bg:#e6fff2; --surface:#f0fff8; --text:#0f2f1f;
-  --border:#66cc99; --accent:#2e8b57;
+  --bg:#e6fff2;
+  --surface:#f0fff8;
+  --text:#0f2f1f;
+  --border:#66cc99;
+  --accent:#2e8b57;
 }
 
 /* ===== BASE ===== */
@@ -38,7 +50,7 @@ header{
   align-items:center;
   border-bottom:1px solid var(--border);
 }
-.icon{font-size:22px;cursor:pointer;text-align:center}
+.icon{text-align:center;font-size:22px;cursor:pointer}
 .title{text-align:center;font-weight:600}
 
 /* ===== SCREENS ===== */
@@ -59,12 +71,18 @@ header{
 #messages{display:flex;flex-direction:column;gap:10px}
 .empty{text-align:center;opacity:.6;margin-top:40px}
 .msg{
-  max-width:80%;padding:12px 14px;border-radius:16px;
-  background:var(--border)
+  max-width:80%;
+  padding:12px 14px;
+  border-radius:16px;
+  background:var(--border);
 }
-.msg.own{align-self:flex-end;background:var(--accent);color:#fff}
+.msg.own{
+  align-self:flex-end;
+  background:var(--accent);
+  color:#fff;
+}
 .msg b{font-size:13px}
-.msg small{font-size:11px;opacity:.7;display:block}
+.msg small{display:block;font-size:11px;opacity:.7}
 
 /* ===== INPUT ===== */
 .input-row{display:flex;gap:10px;margin-top:12px}
@@ -80,21 +98,33 @@ button{
 
 /* ===== MENU ===== */
 .menu{
-  position:fixed;top:0;right:0;width:260px;height:100%;
-  background:var(--surface);transform:translateX(100%);
-  transition:.3s;padding:20px;z-index:100
+  position:fixed;
+  top:0;right:0;
+  width:260px;height:100%;
+  background:var(--surface);
+  transform:translateX(100%);
+  transition:.3s;
+  padding:20px;
+  z-index:100;
 }
 .menu.open{transform:translateX(0)}
 .menu div{margin:15px 0;cursor:pointer}
 
-/* ===== MODAL ===== */
+/* ===== MODALS ===== */
 .modal{
-  position:fixed;inset:0;background:rgba(0,0,0,.6);
-  display:none;align-items:center;justify-content:center;z-index:200
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.6);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:200;
 }
 .modal-box{
-  background:var(--surface);padding:25px;border-radius:18px;
-  width:90%;max-width:320px;text-align:center
+  background:var(--surface);
+  padding:25px;
+  border-radius:18px;
+  width:90%;max-width:320px;
+  text-align:center;
 }
 </style>
 </head>
@@ -125,7 +155,6 @@ button{
   <div class="card" onclick="openRoom('Global Chat')">🌍 Global Chat</div>
   <div class="card" onclick="openRoom('College Chat')">🎓 College Chat</div>
   <div class="card" onclick="openRoom('Tech Chat')">💻 Tech Chat</div>
-
   <div class="card" onclick="openPrivateGroup()">🔐 Private Group (Code)</div>
   <div class="card" onclick="openPersonal()">👤 Personal Chat</div>
 </div>
@@ -139,7 +168,7 @@ button{
   </div>
 </div>
 
-<!-- USERNAME -->
+<!-- USERNAME MODAL -->
 <div class="modal" id="userModal">
   <div class="modal-box">
     <h3>Welcome to UNI-CHAT</h3><br>
@@ -148,7 +177,7 @@ button{
   </div>
 </div>
 
-<!-- PRIVATE GROUP -->
+<!-- PRIVATE GROUP MODAL -->
 <div class="modal" id="privateModal">
   <div class="modal-box">
     <h3>Private Group</h3><br>
@@ -157,14 +186,15 @@ button{
   </div>
 </div>
 
-<!-- PERSONAL CHAT -->
+<!-- PERSONAL CHAT MODAL -->
 <div class="modal" id="personalModal">
   <div class="modal-box">
     <h3>Personal Chat</h3>
     <p style="opacity:.7;font-size:13px;margin:10px 0">
-      You will be matched randomly.<br>Chat starts only if both agree.
+      You will be matched randomly.<br>
+      Chat starts only if both accept.
     </p>
-    <button onclick="acceptPersonal()">Find Someone</button>
+    <button onclick="startPersonal()">Find Someone</button>
   </div>
 </div>
 
@@ -172,8 +202,6 @@ button{
 
 <script>
 let USER = localStorage.getItem('username') || '';
-let CURRENT = '';
-
 const home = document.getElementById('home');
 const chat = document.getElementById('chat');
 const title = document.getElementById('title');
@@ -181,10 +209,14 @@ const backBtn = document.getElementById('backBtn');
 const messages = document.getElementById('messages');
 const menu = document.getElementById('menu');
 
-if(!USER) document.getElementById('userModal').style.display='flex';
+if(!USER){
+  document.getElementById('userModal').style.display='flex';
+}
 
-const savedTheme = localStorage.getItem('theme');
-if(savedTheme && savedTheme!=='light') document.body.setAttribute('data-theme',savedTheme);
+const theme = localStorage.getItem('theme');
+if(theme && theme!=='light'){
+  document.body.setAttribute('data-theme',theme);
+}
 
 /* MENU */
 function openMenu(){menu.classList.add('open')}
@@ -192,12 +224,11 @@ function closeMenu(){menu.classList.remove('open')}
 
 /* NAV */
 function openRoom(name){
-  CURRENT=name;
   home.classList.remove('active');
   chat.classList.add('active');
   title.innerText=name;
   backBtn.style.display='block';
-  resetMessages();
+  resetChat();
   closeMenu();
 }
 function goHome(){
@@ -209,32 +240,37 @@ function goHome(){
 }
 
 /* CHAT */
-function resetMessages(){
+function resetChat(){
   messages.innerHTML='<div class="empty">No messages yet 👋</div>';
 }
 function sendMsg(){
-  const i=document.getElementById('msgInput');
-  if(!i.value.trim())return;
-  const e=document.querySelector('.empty'); if(e)e.remove();
-  const m=document.createElement('div');
-  m.className='msg own';
-  m.innerHTML=`<b>${USER}</b><br>${i.value}<small>${new Date().toLocaleTimeString([],{
+  const input=document.getElementById('msgInput');
+  const text=input.value.trim();
+  if(!text)return;
+  const empty=document.querySelector('.empty');
+  if(empty)empty.remove();
+  const msg=document.createElement('div');
+  msg.className='msg own';
+  msg.innerHTML=`<b>${USER}</b><br>${text}
+  <small>${new Date().toLocaleTimeString([],{
     hour:'2-digit',minute:'2-digit'
   })}</small>`;
-  messages.appendChild(m);
+  messages.appendChild(msg);
   messages.scrollTop=messages.scrollHeight;
-  i.value='';
+  input.value='';
 }
 
 /* USER */
 function saveUser(){
   const v=document.getElementById('userInput').value.trim();
   if(!v)return;
-  USER=v;localStorage.setItem('username',v);
+  USER=v;
+  localStorage.setItem('username',v);
   document.getElementById('userModal').style.display='none';
 }
 function clearUsername(){
-  localStorage.removeItem('username');location.reload();
+  localStorage.removeItem('username');
+  location.reload();
 }
 
 /* PRIVATE GROUP */
@@ -242,17 +278,17 @@ function openPrivateGroup(){
   document.getElementById('privateModal').style.display='flex';
 }
 function joinPrivateGroup(){
-  const c=document.getElementById('groupCode').value.trim();
-  if(!c)return;
+  const code=document.getElementById('groupCode').value.trim();
+  if(!code)return;
   document.getElementById('privateModal').style.display='none';
-  openRoom('Private Group • '+c);
+  openRoom('Private Group • '+code);
 }
 
 /* PERSONAL CHAT */
 function openPersonal(){
   document.getElementById('personalModal').style.display='flex';
 }
-function acceptPersonal(){
+function startPersonal(){
   document.getElementById('personalModal').style.display='none';
   openRoom('Personal Chat');
 }
