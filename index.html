@@ -1,305 +1,418 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>UNI-CHAT</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNI-CHAT</title>
+    <style>
+        :root {
+            --bg-color: #f5f5f5;
+            --text-color: #333;
+            --card-bg: #fff;
+            --border-color: #ddd;
+            --accent-color: #007bff;
+            --input-bg: #fff;
+            --shadow: rgba(0,0,0,0.1);
+        }
 
-<style>
-/* ===== THEMES ===== */
-:root{
-  --bg:#f0f2f5;
-  --surface:#ffffff;
-  --text:#1c1e21;
-  --border:#dddddd;
-  --accent:#0084ff;
-}
-[data-theme="dark"]{
-  --bg:#121212;
-  --surface:#1e1e1e;
-  --text:#ffffff;
-  --border:#333;
-  --accent:#bb86fc;
-}
-[data-theme="pink"]{
-  --bg:#ffe6f0;
-  --surface:#fff0f7;
-  --text:#1c1e21;
-  --border:#ffb6d5;
-  --accent:#ff4f9a;
-}
-[data-theme="green"]{
-  --bg:#e6fff2;
-  --surface:#f0fff8;
-  --text:#0f2f1f;
-  --border:#66cc99;
-  --accent:#2e8b57;
-}
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --card-bg: #1e1e1e;
+            --border-color: #333;
+            --accent-color: #bb86fc;
+            --input-bg: #2c2c2c;
+            --shadow: rgba(255,255,255,0.1);
+        }
 
-/* ===== BASE ===== */
-*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,Arial}
-body{background:var(--bg);color:var(--text);height:100vh}
-#app{height:100vh;display:flex;flex-direction:column}
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-/* ===== HEADER ===== */
-header{
-  background:var(--surface);
-  padding:14px;
-  display:grid;
-  grid-template-columns:32px 1fr 32px;
-  align-items:center;
-  border-bottom:1px solid var(--border);
-}
-.icon{text-align:center;font-size:22px;cursor:pointer}
-.title{text-align:center;font-weight:600}
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+        }
 
-/* ===== SCREENS ===== */
-.screen{flex:1;display:none;padding:20px;overflow-y:auto}
-.screen.active{display:block}
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
 
-/* ===== CARDS ===== */
-.card{
-  background:var(--surface);
-  padding:16px;
-  border-radius:18px;
-  border:1px solid var(--border);
-  margin-bottom:12px;
-  cursor:pointer;
-}
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
 
-/* ===== CHAT ===== */
-#messages{display:flex;flex-direction:column;gap:10px}
-.empty{text-align:center;opacity:.6;margin-top:40px}
-.msg{
-  max-width:80%;
-  padding:12px 14px;
-  border-radius:16px;
-  background:var(--border);
-}
-.msg.own{
-  align-self:flex-end;
-  background:var(--accent);
-  color:#fff;
-}
-.msg b{font-size:13px}
-.msg small{display:block;font-size:11px;opacity:.7}
+        .header h1 {
+            font-size: 1.5em;
+        }
 
-/* ===== INPUT ===== */
-.input-row{display:flex;gap:10px;margin-top:12px}
-input{
-  flex:1;padding:12px;border-radius:20px;
-  border:1px solid var(--border);
-  background:var(--bg);color:var(--text)
-}
-button{
-  padding:12px 18px;border-radius:20px;
-  border:none;background:var(--accent);color:#fff;cursor:pointer
-}
+        .burger {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: var(--text-color);
+        }
 
-/* ===== MENU ===== */
-.menu{
-  position:fixed;
-  top:0;right:0;
-  width:260px;height:100%;
-  background:var(--surface);
-  transform:translateX(100%);
-  transition:.3s;
-  padding:20px;
-  z-index:100;
-}
-.menu.open{transform:translateX(0)}
-.menu div{margin:15px 0;cursor:pointer}
+        .menu {
+            position: fixed;
+            top: 0;
+            left: -250px;
+            width: 250px;
+            height: 100%;
+            background-color: var(--card-bg);
+            box-shadow: 2px 0 5px var(--shadow);
+            transition: left 0.3s;
+            z-index: 1000;
+            padding: 20px;
+        }
 
-/* ===== MODALS ===== */
-.modal{
-  position:fixed;inset:0;
-  background:rgba(0,0,0,.6);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:200;
-}
-.modal-box{
-  background:var(--surface);
-  padding:25px;
-  border-radius:18px;
-  width:90%;max-width:320px;
-  text-align:center;
-}
-</style>
+        .menu.open {
+            left: 0;
+        }
+
+        .menu ul {
+            list-style: none;
+        }
+
+        .menu li {
+            margin: 20px 0;
+        }
+
+        .menu a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 1.2em;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 999;
+        }
+
+        .overlay.show {
+            display: block;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .home .room-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .room-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px var(--shadow);
+            transition: box-shadow 0.3s;
+        }
+
+        .room-card:hover {
+            box-shadow: 0 4px 10px var(--shadow);
+        }
+
+        .room-card h3 {
+            font-size: 1.2em;
+        }
+
+        .chat .messages {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: var(--card-bg);
+        }
+
+        .message {
+            margin-bottom: 10px;
+            padding: 8px;
+            border-radius: 8px;
+            background-color: var(--input-bg);
+        }
+
+        .message .username {
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        .message .timestamp {
+            font-size: 0.8em;
+            color: #888;
+        }
+
+        .chat .input-area {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+        }
+
+        .chat button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 10px;
+            background-color: var(--accent-color);
+            color: white;
+            cursor: pointer;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .modal.hidden {
+            display: none;
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 300px;
+            width: 90%;
+        }
+
+        .modal input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+        }
+
+        .modal button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            background-color: var(--accent-color);
+            color: white;
+            cursor: pointer;
+        }
+
+        .back-arrow {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+        }
+    </style>
 </head>
-
 <body>
-<div id="app">
+    <div class="overlay" id="overlay"></div>
+    <div class="menu" id="menu">
+        <ul>
+            <li><a href="#" onclick="goHome()">Home</a></li>
+            <li><a href="#" onclick="goHome()">Chat Rooms</a></li>
+            <li><a href="#" onclick="toggleTheme()">Toggle Theme</a></li>
+            <li><a href="#" onclick="closeMenu()">Close</a></li>
+        </ul>
+    </div>
 
-<!-- MENU -->
-<div class="menu" id="menu">
-  <div onclick="goHome()">🏠 Home</div>
-  <div onclick="setTheme('light')">🌕 Light</div>
-  <div onclick="setTheme('dark')">🌑 Dark</div>
-  <div onclick="setTheme('pink')">🌸 Pink</div>
-  <div onclick="setTheme('green')">🌿 Green</div>
-  <div onclick="clearUsername()">🗑 Clear Username</div>
-  <div onclick="closeMenu()">❌ Close</div>
-</div>
+    <div class="container">
+        <div class="header">
+            <button class="back-arrow" id="backArrow" style="display: none;" onclick="goHome()">&larr;</button>
+            <h1 id="headerTitle">UNI-CHAT</h1>
+            <button class="burger" onclick="toggleMenu()">&#9776;</button>
+        </div>
 
-<!-- HEADER -->
-<header>
-  <span class="icon" id="backBtn" onclick="goHome()" style="display:none">⬅</span>
-  <div class="title" id="title">UNI-CHAT</div>
-  <span class="icon" onclick="openMenu()">☰</span>
-</header>
+        <div class="screen home active" id="homeScreen">
+            <div class="room-list">
+                <div class="room-card" onclick="enterRoom('Global Chat')">
+                    <h3>Global Chat</h3>
+                    <p>Join the global conversation.</p>
+                </div>
+                <div class="room-card" onclick="enterRoom('College Chat')">
+                    <h3>College Chat</h3>
+                    <p>Discuss college life.</p>
+                </div>
+                <div class="room-card" onclick="enterRoom('Random Chat')">
+                    <h3>Random Chat</h3>
+                    <p>Chat about anything random.</p>
+                </div>
+                <div class="room-card" onclick="enterRoom('Tech Chat')">
+                    <h3>Tech Chat</h3>
+                    <p>Talk tech and gadgets.</p>
+                </div>
+            </div>
+        </div>
 
-<!-- HOME -->
-<div class="screen active" id="home">
-  <div class="card" onclick="openRoom('Global Chat')">🌍 Global Chat</div>
-  <div class="card" onclick="openRoom('College Chat')">🎓 College Chat</div>
-  <div class="card" onclick="openRoom('Tech Chat')">💻 Tech Chat</div>
-  <div class="card" onclick="openPrivateGroup()">🔐 Private Group (Code)</div>
-  <div class="card" onclick="openPersonal()">👤 Personal Chat</div>
-</div>
+        <div class="screen chat" id="chatScreen">
+            <div class="messages" id="messages"></div>
+            <div class="input-area">
+                <input type="text" id="messageInput" placeholder="Type a message..." onkeypress="handleKeyPress(event)">
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
 
-<!-- CHAT -->
-<div class="screen" id="chat">
-  <div id="messages"><div class="empty">No messages yet 👋</div></div>
-  <div class="input-row">
-    <input id="msgInput" placeholder="Type a message…">
-    <button onclick="sendMsg()">Send</button>
-  </div>
-</div>
+    <div class="modal" id="usernameModal">
+        <div class="modal-content">
+            <h2>Choose a Username</h2>
+            <input type="text" id="usernameInput" placeholder="Enter username">
+            <button onclick="setUsername()">Continue</button>
+        </div>
+    </div>
 
-<!-- USERNAME MODAL -->
-<div class="modal" id="userModal">
-  <div class="modal-box">
-    <h3>Welcome to UNI-CHAT</h3><br>
-    <input id="userInput" placeholder="Choose a username"><br><br>
-    <button onclick="saveUser()">Continue</button>
-  </div>
-</div>
+    <script>
+        let username = localStorage.getItem('username');
+        let currentRoom = null;
+        let messages = {};
 
-<!-- PRIVATE GROUP MODAL -->
-<div class="modal" id="privateModal">
-  <div class="modal-box">
-    <h3>Private Group</h3><br>
-    <input id="groupCode" placeholder="Enter group code"><br><br>
-    <button onclick="joinPrivateGroup()">Join</button>
-  </div>
-</div>
+        function init() {
+            const theme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', theme);
 
-<!-- PERSONAL CHAT MODAL -->
-<div class="modal" id="personalModal">
-  <div class="modal-box">
-    <h3>Personal Chat</h3>
-    <p style="opacity:.7;font-size:13px;margin:10px 0">
-      You will be matched randomly.<br>
-      Chat starts only if both accept.
-    </p>
-    <button onclick="startPersonal()">Find Someone</button>
-  </div>
-</div>
+            if (!username) {
+                document.getElementById('usernameModal').classList.remove('hidden');
+            } else {
+                document.getElementById('usernameModal').classList.add('hidden');
+            }
+        }
 
-</div>
+        function setUsername() {
+            const input = document.getElementById('usernameInput');
+            if (input.value.trim()) {
+                username = input.value.trim();
+                localStorage.setItem('username', username);
+                document.getElementById('usernameModal').classList.add('hidden');
+            }
+        }
 
-<script>
-let USER = localStorage.getItem('username') || '';
-const home = document.getElementById('home');
-const chat = document.getElementById('chat');
-const title = document.getElementById('title');
-const backBtn = document.getElementById('backBtn');
-const messages = document.getElementById('messages');
-const menu = document.getElementById('menu');
+        function toggleMenu() {
+            const menu = document.getElementById('menu');
+            const overlay = document.getElementById('overlay');
+            menu.classList.toggle('open');
+            overlay.classList.toggle('show');
+        }
 
-if(!USER){
-  document.getElementById('userModal').style.display='flex';
-}
+        function closeMenu() {
+            document.getElementById('menu').classList.remove('open');
+            document.getElementById('overlay').classList.remove('show');
+        }
 
-const theme = localStorage.getItem('theme');
-if(theme && theme!=='light'){
-  document.body.setAttribute('data-theme',theme);
-}
+        function goHome() {
+            document.getElementById('homeScreen').classList.add('active');
+            document.getElementById('chatScreen').classList.remove('active');
+            document.getElementById('headerTitle').textContent = 'UNI-CHAT';
+            document.getElementById('backArrow').style.display = 'none';
+            currentRoom = null;
+            closeMenu();
+        }
 
-/* MENU */
-function openMenu(){menu.classList.add('open')}
-function closeMenu(){menu.classList.remove('open')}
+        function enterRoom(roomName) {
+            currentRoom = roomName;
+            document.getElementById('homeScreen').classList.remove('active');
+            document.getElementById('chatScreen').classList.add('active');
+            document.getElementById('headerTitle').textContent = roomName;
+            document.getElementById('backArrow').style.display = 'block';
+            document.getElementById('messages').innerHTML = '';
+            if (!messages[roomName]) messages[roomName] = [];
+            renderMessages();
+            closeMenu();
+        }
 
-/* NAV */
-function openRoom(name){
-  home.classList.remove('active');
-  chat.classList.add('active');
-  title.innerText=name;
-  backBtn.style.display='block';
-  resetChat();
-  closeMenu();
-}
-function goHome(){
-  chat.classList.remove('active');
-  home.classList.add('active');
-  title.innerText='UNI-CHAT';
-  backBtn.style.display='none';
-  closeMenu();
-}
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            if (input.value.trim() && currentRoom) {
+                const message = {
+                    username: username,
+                    text: input.value.trim(),
+                    timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+                };
+                messages[currentRoom].push(message);
+                renderMessages();
+                input.value = '';
+                scrollToBottom();
+            }
+        }
 
-/* CHAT */
-function resetChat(){
-  messages.innerHTML='<div class="empty">No messages yet 👋</div>';
-}
-function sendMsg(){
-  const input=document.getElementById('msgInput');
-  const text=input.value.trim();
-  if(!text)return;
-  const empty=document.querySelector('.empty');
-  if(empty)empty.remove();
-  const msg=document.createElement('div');
-  msg.className='msg own';
-  msg.innerHTML=`<b>${USER}</b><br>${text}
-  <small>${new Date().toLocaleTimeString([],{
-    hour:'2-digit',minute:'2-digit'
-  })}</small>`;
-  messages.appendChild(msg);
-  messages.scrollTop=messages.scrollHeight;
-  input.value='';
-}
+        function renderMessages() {
+            const messagesDiv = document.getElementById('messages');
+            messagesDiv.innerHTML = messages[currentRoom].map(msg => `
+                <div class="message">
+                    <span class="username">${msg.username}</span>: ${msg.text}
+                    <span class="timestamp">${msg.timestamp}</span>
+                </div>
+            `).join('');
+        }
 
-/* USER */
-function saveUser(){
-  const v=document.getElementById('userInput').value.trim();
-  if(!v)return;
-  USER=v;
-  localStorage.setItem('username',v);
-  document.getElementById('userModal').style.display='none';
-}
-function clearUsername(){
-  localStorage.removeItem('username');
-  location.reload();
-}
+        function scrollToBottom() {
+            const messagesDiv = document.getElementById('messages');
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
 
-/* PRIVATE GROUP */
-function openPrivateGroup(){
-  document.getElementById('privateModal').style.display='flex';
-}
-function joinPrivateGroup(){
-  const code=document.getElementById('groupCode').value.trim();
-  if(!code)return;
-  document.getElementById('privateModal').style.display='none';
-  openRoom('Private Group • '+code);
-}
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
 
-/* PERSONAL CHAT */
-function openPersonal(){
-  document.getElementById('personalModal').style.display='flex';
-}
-function startPersonal(){
-  document.getElementById('personalModal').style.display='none';
-  openRoom('Personal Chat');
-}
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            closeMenu();
+        }
 
-/* THEME */
-function setTheme(t){
-  if(t==='light')document.body.removeAttribute('data-theme');
-  else document.body.setAttribute('data-theme',t);
-  localStorage.setItem('theme',t);
-}
-</script>
-
+        window.onload = init;
+    </script>
 </body>
 </html>
+```
