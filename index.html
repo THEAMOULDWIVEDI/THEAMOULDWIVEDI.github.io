@@ -1,131 +1,237 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>UNI-CHAT</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UNI-CHAT</title>
 
-  <style>
-    :root {
-      --bg: #f5f5f5;
-      --text: #000;
-      --box: #fff;
-      --border: #ccc;
-    }
+<style>
+:root{
+  --bg:#f0f2f5;
+  --surface:#ffffff;
+  --text:#1c1e21;
+  --border:#dddddd;
+  --accent:#0084ff;
+}
+[data-theme="dark"]{
+  --bg:#121212;
+  --surface:#1e1e1e;
+  --text:#ffffff;
+  --border:#333;
+  --accent:#bb86fc;
+}
+[data-theme="pink"]{
+  --bg:#ffe6f0;
+  --surface:#fff0f7;
+  --text:#1c1e21;
+  --border:#ffb6d5;
+  --accent:#ff4f9a;
+}
+[data-theme="green"]{
+  --bg:#e6fff2;
+  --surface:#f0fff8;
+  --text:#0f2f1f;
+  --border:#66cc99;
+  --accent:#2e8b57;
+}
 
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-    }
+*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,Arial}
+body{background:var(--bg);color:var(--text);height:100vh}
+#app{height:100vh;display:flex;flex-direction:column}
 
-    h1, p {
-      text-align: center;
-    }
+header{
+  background:var(--surface);
+  padding:14px;
+  display:grid;
+  grid-template-columns:32px 1fr 32px;
+  align-items:center;
+  border-bottom:1px solid var(--border);
+}
+.icon{text-align:center;font-size:22px;cursor:pointer}
+.title{text-align:center;font-weight:600}
 
-    input, button {
-      display: block;
-      width: 90%;
-      max-width: 300px;
-      margin: 10px auto;
-      padding: 12px;
-      font-size: 16px;
-      background: var(--box);
-      color: var(--text);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-    }
+.screen{flex:1;display:none;padding:20px;overflow-y:auto}
+.screen.active{display:block}
 
-    button {
-      cursor: pointer;
-      border-radius: 999px;
-      font-weight: 600;
-      transition: all 0.2s ease;
-    }
+.card{
+  background:var(--surface);
+  padding:16px;
+  border-radius:18px;
+  border:1px solid var(--border);
+  margin-bottom:12px;
+  cursor:pointer;
+}
 
-    button:hover {
-      transform: scale(1.02);
-      opacity: 0.95;
-    }
+#messages{display:flex;flex-direction:column;gap:10px}
+.empty{text-align:center;opacity:.6;margin-top:40px}
+.msg{
+  max-width:80%;
+  padding:12px 14px;
+  border-radius:16px;
+  background:var(--border);
+}
+.msg.own{
+  align-self:flex-end;
+  background:var(--accent);
+  color:#fff;
+}
 
-    .theme-btn.active {
-      outline: 2px solid var(--border);
-    }
+.input-row{display:flex;gap:10px;margin-top:12px}
+input{
+  flex:1;padding:12px;border-radius:20px;
+  border:1px solid var(--border);
+  background:var(--bg);color:var(--text)
+}
+button{
+  padding:12px 18px;border-radius:20px;
+  border:none;background:var(--accent);color:#fff;cursor:pointer
+}
 
-    /* THEMES */
-    body.dark {
-      --bg: #121212;
-      --text: #fff;
-      --box: #1e1e1e;
-      --border: #333;
-    }
+.menu{
+  position:fixed;
+  top:0;right:0;
+  width:260px;height:100%;
+  background:var(--surface);
+  transform:translateX(100%);
+  transition:.3s;
+  padding:20px;
+  z-index:100;
+}
+.menu.open{transform:translateX(0)}
+.menu div{margin:15px 0;cursor:pointer}
 
-    body.pink {
-      --bg: #ffe6f0;
-      --text: #000;
-      --box: #fff0f7;
-      --border: #ff99c8;
-    }
-
-    body.green {
-      --bg: #e6fff2;
-      --text: #000;
-      --box: #f0fff8;
-      --border: #66cc99;
-    }
-  </style>
+.modal{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.6);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:200;
+}
+.modal-box{
+  background:var(--surface);
+  padding:25px;
+  border-radius:18px;
+  width:90%;max-width:320px;
+  text-align:center;
+}
+</style>
 </head>
 
 <body>
-  <h1>UNI-CHAT</h1>
-  <p>Global chat. Username only.</p>
+<div id="app">
 
-  <div style="text-align:center; margin:15px; display:grid; gap:10px;">
-    <button class="theme-btn" data-theme="dark">Dark</button>
-    <button class="theme-btn" data-theme="pink">Pink</button>
-    <button class="theme-btn" data-theme="green">Green</button>
-    <button class="theme-btn" data-theme="light">Light</button>
+<div class="menu" id="menu">
+  <div onclick="goHome()">🏠 Home</div>
+  <div onclick="setTheme('light')">🌕 Light</div>
+  <div onclick="setTheme('dark')">🌑 Dark</div>
+  <div onclick="setTheme('pink')">🌸 Pink</div>
+  <div onclick="setTheme('green')">🌿 Green</div>
+  <div onclick="clearUsername()">🗑 Clear Username</div>
+  <div onclick="closeMenu()">❌ Close</div>
+</div>
+
+<header>
+  <span class="icon" id="backBtn" onclick="goHome()" style="display:none">←</span>
+  <div class="title" id="title">UNI-CHAT</div>
+  <span class="icon" onclick="openMenu()">☰</span>
+</header>
+
+<div class="screen active" id="home">
+  <div class="card" onclick="openRoom('🌍 Global Chat')">🌍 Global Chat</div>
+  <div class="card" onclick="openRoom('🎓 College Chat')">🎓 College Chat</div>
+  <div class="card" onclick="openRoom('💻 Tech Chat')">💻 Tech Chat</div>
+  <div class="card" onclick="openPrivate()">🔐 Private Group</div>
+  <div class="card" onclick="openPersonal()">👤 Personal Chat</div>
+</div>
+
+<div class="screen" id="chat">
+  <div id="messages"><div class="empty">No messages yet 👋</div></div>
+  <div class="input-row">
+    <input id="msgInput" placeholder="Type a message…">
+    <button onclick="sendMsg()">Send</button>
   </div>
+</div>
 
-  <input placeholder="username">
-  <button id="enterBtn">Enter</button>
+<div class="modal" id="userModal">
+  <div class="modal-box">
+    <h3>Welcome to UNI-CHAT</h3><br>
+    <input id="userInput" placeholder="Choose a username"><br><br>
+    <button onclick="saveUser()">Continue</button>
+  </div>
+</div>
 
-  <script>
-    const buttons = document.querySelectorAll('.theme-btn');
-    const input = document.querySelector('input');
-    const enterBtn = document.getElementById('enterBtn');
+</div>
 
-    function applyTheme(theme) {
-      document.body.className = theme === 'light' ? '' : theme;
-      localStorage.setItem('theme', theme);
+<script>
+let USER = localStorage.getItem("username") || "";
 
-      buttons.forEach(btn => btn.classList.remove('active'));
-      const activeBtn = [...buttons].find(b => b.dataset.theme === theme);
-      if (activeBtn) activeBtn.classList.add('active');
-    }
+const home = document.getElementById("home");
+const chat = document.getElementById("chat");
+const title = document.getElementById("title");
+const backBtn = document.getElementById("backBtn");
+const menu = document.getElementById("menu");
+const messages = document.getElementById("messages");
 
-    buttons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        applyTheme(btn.dataset.theme);
-      });
-    });
+if(!USER){
+  document.getElementById("userModal").style.display="flex";
+}
 
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    applyTheme(savedTheme);
+function openMenu(){menu.classList.add("open")}
+function closeMenu(){menu.classList.remove("open")}
 
-    function saveUsername() {
-      const name = input.value.trim();
-      if (!name) {
-        alert('Enter username');
-        return;
-      }
-      localStorage.setItem('username', name);
-      alert('Saved: ' + name);
-    }
+function openRoom(name){
+  home.classList.remove("active");
+  chat.classList.add("active");
+  title.innerText=name;
+  backBtn.style.display="block";
+  messages.innerHTML='<div class="empty">No messages yet 👋</div>';
+  closeMenu();
+}
 
-    enterBtn.addEventListener('click', saveUsername);
-  </script>
+function goHome(){
+  chat.classList.remove("active");
+  home.classList.add("active");
+  title.innerText="UNI-CHAT";
+  backBtn.style.display="none";
+  closeMenu();
+}
+
+function sendMsg(){
+  const input=document.getElementById("msgInput");
+  const text=input.value.trim();
+  if(!text)return;
+  const empty=document.querySelector(".empty");
+  if(empty)empty.remove();
+  const msg=document.createElement("div");
+  msg.className="msg own";
+  msg.innerHTML=`<b>${USER}</b><br>${text}`;
+  messages.appendChild(msg);
+  input.value="";
+}
+
+function saveUser(){
+  const v=document.getElementById("userInput").value.trim();
+  if(!v)return;
+  USER=v;
+  localStorage.setItem("username",v);
+  document.getElementById("userModal").style.display="none";
+}
+
+function clearUsername(){
+  localStorage.removeItem("username");
+  location.reload();
+}
+
+function setTheme(t){
+  if(t==="light")document.body.removeAttribute("data-theme");
+  else document.body.setAttribute("data-theme",t);
+  localStorage.setItem("theme",t);
+}
+
+function openPrivate(){openRoom("🔐 Private Group")}
+function openPersonal(){openRoom("👤 Personal Chat")}
+</script>
+
 </body>
 </html>
-
