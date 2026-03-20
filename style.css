@@ -51,6 +51,7 @@ h2 {
   text-decoration: none;
   border-radius: 8px;
   transition: 0.3s;
+   background: rgba(255,255,255,0.03);
 }
 
 .project a:hover {
