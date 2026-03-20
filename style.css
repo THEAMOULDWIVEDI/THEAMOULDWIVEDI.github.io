@@ -65,6 +65,36 @@ h2 {
 .project:hover {
   border-color: #00ffcc;
   transform: translateY(-5px);
+  /* smooth fade in */
+section {
+  animation: fadeIn 1s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* glowing text */
+h1 {
+  text-shadow: 0 0 10px rgba(0,255,204,0.3);
+}
+
+/* glowing card on hover */
+.project:hover {
+  box-shadow: 0 0 20px rgba(0,255,204,0.2);
+}
+
+/* smooth transitions */
+* {
+  transition: all 0.3s ease;
+}
 }
 
 /* links */
