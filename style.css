@@ -34,7 +34,6 @@ h2 {
 }
 
 /* project cards */
-/* project cards */
 .project {
   margin: 20px auto;
   padding: 20px;
@@ -42,6 +41,16 @@ h2 {
   border: 1px solid #333;
   border-radius: 10px;
   transition: 0.3s;
+}
+
+.project a {
+  display: inline-block;
+  margin-top: 10px;
+}
+
+.project:hover {
+  border-color: #00ffcc;
+  transform: translateY(-5px);
 }
 
 .project a {
