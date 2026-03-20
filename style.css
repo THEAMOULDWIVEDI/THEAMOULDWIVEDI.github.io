@@ -96,6 +96,16 @@ h1 {
   transition: all 0.3s ease;
 }
 
+  /* product section */
+.product-box {
+  margin: 30px auto;
+  padding: 40px;
+  max-width: 300px;
+  border: 1px solid #222;
+  border-radius: 20px;
+  background: #111;
+  box-shadow: 0 0 30px rgba(0,255,204,0.1);
+}
 /* links */
 a {
   color: #00ffcc;
