@@ -106,6 +106,60 @@ h1 {
   background: #111;
   box-shadow: 0 0 30px rgba(0,255,204,0.1);
 }
+  /* split product layout */
+.product-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  flex-wrap: wrap;
+  margin-top: 40px;
+}
+
+.product-image img {
+  width: 250px;
+  border-radius: 20px;
+  box-shadow: 0 0 40px rgba(0,255,204,0.2);
+}
+
+.product-text {
+  max-width: 400px;
+  text-align: left;
+}
+.product-text h2 {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+/* split product layout */
+.product-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  flex-wrap: wrap;
+  margin-top: 40px;
+}
+
+.product-image img {
+  width: 250px;
+  border-radius: 20px;
+  box-shadow: 0 0 40px rgba(0,255,204,0.2);
+}
+
+.product-text {
+  max-width: 400px;
+  text-align: left;
+}
+
+.product-text h2 {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.product-text p {
+  margin-bottom: 10px;
+  color: #ccc;
+}
 /* links */
 a {
   color: #00ffcc;
