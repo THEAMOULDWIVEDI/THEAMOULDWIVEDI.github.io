@@ -125,3 +125,29 @@ h1 {
   margin-bottom: 10px;
   color: #ccc;
 }
+
+/* mobile responsive */
+@media (max-width: 768px) {
+
+  .product-container {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .product-image img {
+    width: 200px;
+  }
+
+  .product-text {
+    text-align: center;
+  }
+
+  h1 {
+    font-size: 28px;
+  }
+
+  h2 {
+    font-size: 22px;
+  }
+
+}
