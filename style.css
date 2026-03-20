@@ -1,13 +1,9 @@
 body {
-  body {
-  background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
-}
   margin: 0;
   font-family: 'Segoe UI', sans-serif;
-  background: #0f0f0f;
+  background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
   color: white;
 }
-
 nav {
   text-align: center;
 }
