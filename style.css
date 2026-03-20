@@ -5,6 +5,9 @@ body {
   color: white;
 }
 
+nav {
+  text-align: center;
+}
 /* sections */
 section {
   padding: 60px 20px;
@@ -13,6 +16,10 @@ section {
 
 /* hero */
 .hero {
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   background: linear-gradient(to bottom, #000000, #111111);
   padding: 100px 20px;
 }
@@ -27,7 +34,10 @@ h2 {
 }
 
 /* project cards */
-.project {
+.project a {
+  display: inline-block;
+  margin-top: 10px;
+}
   margin: 20px auto;
   padding: 20px;
   max-width: 400px;
