@@ -101,6 +101,9 @@ h2 {
   flex-wrap: wrap;
   margin-top: 40px;
 }
+.product-section {
+  margin-bottom: 40px;
+}
 
 .product-image img {
   max-width: 300px;
