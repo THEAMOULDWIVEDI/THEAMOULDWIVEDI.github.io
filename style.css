@@ -198,8 +198,12 @@ section {
   }
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 @media (max-width: 600px) {
   #contact {
-    margin-top: 200px;
+    margin-top: 120px;
   }
 }
