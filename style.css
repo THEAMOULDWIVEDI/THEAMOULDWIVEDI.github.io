@@ -151,7 +151,9 @@ section {
 .product-text p {
   margin-bottom: 10px;
   color: #ccc;
-  .product-text p:first-child {
+}
+
+.product-text p:first-child {
   letter-spacing: 2px;
 }
 
