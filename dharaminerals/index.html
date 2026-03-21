@@ -7,7 +7,7 @@
 </head>
 <body>
 
-  <header style="
+<header style="
   display:flex;
   justify-content:space-between;
   align-items:center;
@@ -16,7 +16,6 @@
   backdrop-filter: blur(10px);
 ">
 
-  <!-- LEFT: LOGO + NAME -->
   <div style="display:flex; align-items:center;">
     <img src="../logo.png" style="width:50px; margin-right:10px;">
     <h2 style="margin:0; font-size:20px; letter-spacing:2px;">
@@ -24,9 +23,9 @@
     </h2>
   </div>
 
-  <!-- RIGHT: NAV -->
   <nav>
-   <a href="/" style="text-decoration:none; color:white; transition:0.3s;">Home</a>
+    <a href="/" style="text-decoration:none; color:white; transition:0.3s;">Home</a>
+  </nav>
 
 </header>
 
@@ -51,20 +50,30 @@
 </section>
 
 <!-- SECOND SECTION -->
-<section style="margin-top:40px;">
+<section style="margin-top:40px; padding:40px;">
   <h2 style="text-align:center;">Our Product</h2>
 
-  <div style="display:flex; justify-content:flex-end; padding-right:40px;">
-    <img src="../bottle-clean.png" alt="Dhara Bottle" style="max-width:350px; width:100%;">
-  </div>
+  <div style="
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:40px;
+    margin-top:30px;
+  ">
 
-  body {
-  color: white;
-}
-  a:hover {
-  color: #00ffcc;
-}
-  
+    <div style="max-width:500px;">
+      <p>
+        Dhara Minerals provides clean, pure, and reliable bottled water
+        designed for businesses, events, and everyday use.
+      </p>
+    </div>
+
+    <div>
+      <img src="../bottle-clean.png" alt="Dhara Bottle" style="max-width:350px; width:100%;">
+    </div>
+
+  </div>
 </section>
+
 </body>
 </html>
