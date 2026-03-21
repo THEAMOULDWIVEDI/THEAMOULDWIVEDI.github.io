@@ -151,6 +151,8 @@ section {
 .product-text p {
   margin-bottom: 10px;
   color: #ccc;
+  .product-text p:first-child {
+  letter-spacing: 2px;
 }
 
 /* animation */
