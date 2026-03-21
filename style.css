@@ -40,43 +40,44 @@ h2 {
   border: 1px solid #333;
   border-radius: 10px;
   transition: 0.3s;
+  background: rgba(255,255,255,0.03);
 }
 
 .project a {
   display: inline-block;
-  margin-top: 40px;
+  margin-top: 20px;
   padding: 10px 20px;
   background: #00ffcc;
   color: black;
   text-decoration: none;
   border-radius: 8px;
   transition: 0.3s;
-   background: rgba(255,255,255,0.03);
 }
 
 .project a:hover {
   background: #00ccaa;
 }
-.project:hover {
-  border-color: #00ffcc;
-  transform: translateY(-5px);
-}
-
-.project a {
-  display: inline-block;
-  margin-top: 10px;
-}
-  border: 1px solid #333;
-  border-radius: 10px;
-  transition: 0.3s;
-}
 
 .project:hover {
   border-color: #00ffcc;
   transform: translateY(-5px);
-  /* smooth fade in */
+  box-shadow: 0 0 20px rgba(0,255,204,0.2);
+}
+
+/* smooth fade in */
 section {
   animation: fadeIn 1s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes fadeIn {
