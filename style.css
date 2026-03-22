@@ -195,3 +195,10 @@ html {
   }
 
 }
+@media (max-width: 768px) {
+
+  #contact img {
+    width: 60px !important;
+  }
+
+}
