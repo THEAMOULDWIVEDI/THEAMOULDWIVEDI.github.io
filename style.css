@@ -17,7 +17,6 @@ nav a:hover {
   color: #00ffcc;
 }
 
-/* sections */
 section {
   padding: 60px 20px;
   text-align: center;
@@ -43,6 +42,7 @@ section {
   color: #00ffcc;
   margin-bottom: 20px;
 }
+
 .tagline {
   font-size: 18px;
   max-width: 600px;
@@ -54,18 +54,21 @@ section {
   max-width: 600px;
   margin: 0 auto 30px;
 }
+
 .hero-buttons {
   display: flex;
   gap: 15px;
   justify-content: center;
   flex-wrap: wrap;
 }
+
 .btn {
   padding: 10px 20px;
   border-radius: 25px;
   text-decoration: none;
   font-size: 14px;
 }
+
 .primary {
   background: #00ffcc;
   color: black;
@@ -75,7 +78,7 @@ section {
   color: #00ffcc;
 }
 
-/* project cards */
+/* project */
 .project {
   margin: 20px auto;
   padding: 20px;
@@ -90,31 +93,20 @@ section {
   transform: translateY(-5px);
   box-shadow: 0 0 20px rgba(0,255,204,0.2);
 }
-.project a {
-  display: inline-block;
-  margin-top: 20px;
-  padding: 10px 20px;
-  background: #00ffcc;
-  color: black;
-  text-decoration: none;
-  border-radius: 8px;
-  transition: 0.3s;
-}
-.project a:hover {
-  background: #00ccaa;
-}
 
-/* product layout */
+/* ✅ PRODUCT FIX */
 .product-container {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 40px;
   margin-top: 40px;
+  flex-wrap: wrap; /* IMPORTANT */
 }
 
-.product-section {
-  margin-bottom: 40px;
+.product-text {
+  max-width: 500px;
+  text-align: left;
 }
 
 .product-image img {
@@ -123,25 +115,6 @@ section {
   height: auto;
   border-radius: 20px;
   box-shadow: 0 0 40px rgba(0,255,204,0.2);
-}
-
-.product-text {
-  max-width: 500px; /* FIXED */
-  text-align: left;
-}
-
-.product-text h2 {
-  font-size: 32px;
-  margin-bottom: 10px;
-}
-
-.product-text p {
-  margin-bottom: 10px;
-  color: #ccc;
-}
-
-.product-text p:first-child {
-  letter-spacing: 2px;
 }
 
 /* animation */
@@ -156,25 +129,27 @@ section {
   }
 }
 
-/* smooth transitions */
 * {
   transition: all 0.3s ease;
 }
 
-/* 🔥 MOBILE FIX */
+/* 🔥 STRONG MOBILE FIX */
 @media (max-width: 768px) {
+
   .product-container {
-    flex-direction: column; /* STACK */
+    flex-direction: column !important;
+    align-items: center !important;
     text-align: center;
   }
 
   .product-text {
-    text-align: center;
-    max-width: 100%;
+    max-width: 100% !important;
+    text-align: center !important;
   }
 
   .product-image img {
-    width: 220px;
+    width: 85% !important;
+    max-width: 250px;
     margin-top: 20px;
   }
 
