@@ -171,3 +171,27 @@ html {
     margin-top: 200px;
   }
 }
+@media (max-width: 768px) {
+
+  /* FORCE ALL FLEX TO STACK */
+  div[style*="display:flex"] {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+  }
+
+  /* TEXT FULL WIDTH */
+  .product-text {
+    max-width: 100% !important;
+    text-align: center !important;
+  }
+
+  /* IMAGE FIX */
+  .product-image img,
+  img {
+    width: 85% !important;
+    max-width: 260px !important;
+    margin-top: 20px !important;
+  }
+
+}
