@@ -197,6 +197,13 @@ html {
 }
 @media (max-width: 768px) {
 
+  #contact div {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    gap: 20px !important;
+  }
+
   #contact img {
     width: 50px !important;
   }
