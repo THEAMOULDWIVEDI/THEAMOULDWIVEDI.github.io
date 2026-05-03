@@ -29,11 +29,16 @@
     .tabs { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
     .tab { background: #1a1a2e; color: #888; border: 1px solid #2a2a4a; padding: 7px 18px; border-radius: 20px; font-size: 13px; }
     .tab.active { background: #6c63ff; color: white; border-color: #6c63ff; }
-    #requestsList { display: flex; flex-direction: column; gap: 12px; }
+    .section { display: none; }
+    .section.active { display: block; }
+    #requestsList, #transactionsList, #usersList { display: flex; flex-direction: column; gap: 12px; }
     .card { background: #1a1a2e; border: 1px solid #2a2a4a; border-radius: 10px; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
     .card.pending  { border-left: 4px solid #ff9800; }
     .card.approved { border-left: 4px solid #4caf50; }
     .card.rejected { border-left: 4px solid #f44336; }
+    .card.frozen   { border-left: 4px solid #2196f3; }
+    .card.debit    { border-left: 4px solid #f44336; }
+    .card.credit   { border-left: 4px solid #4caf50; }
     .card-info h3 { font-size: 15px; margin-bottom: 4px; }
     .card-info p  { font-size: 12px; color: #888; margin-top: 2px; }
     .card-amount { font-size: 22px; font-weight: 700; color: #6c63ff; min-width: 90px; text-align: center; }
@@ -42,14 +47,27 @@
     .badge.pending  { background: #ff980022; color: #ff9800; }
     .badge.approved { background: #4caf5022; color: #4caf50; }
     .badge.rejected { background: #f4433622; color: #f44336; }
-    .actions { display: flex; gap: 8px; }
+    .badge.frozen   { background: #2196f322; color: #2196f3; }
+    .badge.active   { background: #4caf5022; color: #4caf50; }
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; }
     .btn-approve { background: #4caf50; color: white; padding: 8px 16px; font-size: 13px; }
     .btn-reject  { background: #f44336; color: white; padding: 8px 16px; font-size: 13px; }
+    .btn-freeze  { background: #2196f3; color: white; padding: 8px 16px; font-size: 13px; }
+    .btn-unfreeze{ background: #4caf50; color: white; padding: 8px 16px; font-size: 13px; }
+    .btn-balance { background: #ff9800; color: white; padding: 8px 16px; font-size: 13px; }
     #emptyMsg { text-align: center; color: #555; padding: 40px; font-size: 14px; }
     #toastBox { position: fixed; bottom: 24px; right: 24px; display: flex; flex-direction: column; gap: 8px; z-index: 999; }
     .toast { background: #1a1a2e; border: 1px solid #2a2a4a; padding: 12px 18px; border-radius: 8px; font-size: 13px; animation: fadeIn 0.3s ease; }
     .toast.success { border-left: 4px solid #4caf50; }
     .toast.error   { border-left: 4px solid #f44336; }
+    .modal-overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center; }
+    .modal-overlay.show { display: flex; }
+    .modal { background: #1a1a2e; border: 1px solid #2a2a4a; border-radius: 12px; padding: 28px; width: 360px; }
+    .modal h3 { color: #6c63ff; margin-bottom: 16px; }
+    .modal input { margin-bottom: 12px; }
+    .modal-actions { display: flex; gap: 10px; margin-top: 8px; }
+    .btn-confirm { background: #6c63ff; color: white; padding: 10px 20px; flex: 1; }
+    .btn-cancel  { background: #2a2a4a; color: #e0e0e0; padding: 10px 20px; flex: 1; }
     @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; } }
   </style>
 </head>
@@ -76,15 +94,58 @@
     <div class="stat-card"><p>Pending</p><h2 id="statPending">0</h2></div>
     <div class="stat-card"><p>Approved Today</p><h2 id="statApproved">0</h2></div>
     <div class="stat-card"><p>Rejected Today</p><h2 id="statRejected">0</h2></div>
-    <div class="stat-card"><p>Total</p><h2 id="statTotal">0</h2></div>
+    <div class="stat-card"><p>Total Requests</p><h2 id="statTotal">0</h2></div>
+    <div class="stat-card"><p>Total Users</p><h2 id="statUsers">0</h2></div>
+    <div class="stat-card"><p>Frozen Users</p><h2 id="statFrozen">0</h2></div>
   </div>
+
   <div class="tabs">
-    <button class="tab active" onclick="filterRequests('pending', event)">Pending</button>
-    <button class="tab" onclick="filterRequests('approved', event)">Approved</button>
-    <button class="tab" onclick="filterRequests('rejected', event)">Rejected</button>
-    <button class="tab" onclick="filterRequests('all', event)">All</button>
+    <button class="tab active" onclick="showSection('requests', event)">Balance Requests</button>
+    <button class="tab" onclick="showSection('transactions', event)">Transactions</button>
+    <button class="tab" onclick="showSection('users', event)">Users</button>
   </div>
-  <div id="requestsList"><p style="color:#555;padding:20px">Loading...</p></div>
+
+  <!-- Balance Requests Section -->
+  <div id="section-requests" class="section active">
+    <div class="tabs" style="margin-bottom:16px">
+      <button class="tab active" onclick="filterRequests('pending', event)">Pending</button>
+      <button class="tab" onclick="filterRequests('approved', event)">Approved</button>
+      <button class="tab" onclick="filterRequests('rejected', event)">Rejected</button>
+      <button class="tab" onclick="filterRequests('all', event)">All</button>
+    </div>
+    <div id="requestsList"><p style="color:#555;padding:20px">Loading...</p></div>
+  </div>
+
+  <!-- Transactions Section -->
+  <div id="section-transactions" class="section">
+    <div style="display:flex;gap:10px;margin-bottom:16px;align-items:center">
+      <input id="txnSearch" placeholder="Search by user ID or merchant..." style="margin:0;flex:1"/>
+      <button class="btn-approve" onclick="loadTransactions()" style="padding:10px 16px">🔍 Search</button>
+    </div>
+    <div id="transactionsList"><p style="color:#555;padding:20px">Click Search to load transactions.</p></div>
+  </div>
+
+  <!-- Users Section -->
+  <div id="section-users" class="section">
+    <div style="margin-bottom:16px">
+      <input id="userSearch" placeholder="Search by name or email..." style="margin:0"/>
+    </div>
+    <div id="usersList"><p style="color:#555;padding:20px">Loading...</p></div>
+  </div>
+</div>
+
+<!-- Manual Balance Modal -->
+<div class="modal-overlay" id="balanceModal">
+  <div class="modal">
+    <h3>💰 Manual Balance Correction</h3>
+    <p style="color:#888;font-size:13px;margin-bottom:16px">Current balance: <span id="modalCurrentBalance" style="color:#6c63ff;font-weight:bold"></span></p>
+    <input type="number" id="modalNewBalance" placeholder="Enter new balance amount"/>
+    <input type="text" id="modalReason" placeholder="Reason (e.g. manual correction)"/>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeBalanceModal()">Cancel</button>
+      <button class="btn-confirm" onclick="confirmBalanceUpdate()">Update Balance</button>
+    </div>
+  </div>
 </div>
 
 <div id="toastBox"></div>
@@ -104,8 +165,12 @@
   const auth = firebase.auth();
 
   let allRequests   = [];
+  let allUsers      = [];
   let currentFilter = 'pending';
+  let selectedUserId = null;
+  let selectedUserBalance = 0;
 
+  // ── Auth ──────────────────────────────────────────────
   document.getElementById('btnLogin').onclick = () => {
     const email = document.getElementById('adminEmail').value.trim();
     const pass  = document.getElementById('adminPassword').value.trim();
@@ -118,8 +183,7 @@
   document.getElementById('logoutBtn').onclick = () => auth.signOut();
 
   auth.onAuthStateChanged(user => {
-if (user) {
-      // ✅ Only admin can access
+    if (user) {
       if (user.email !== 'dwivediamol455@gmail.com') {
         auth.signOut();
         document.getElementById('loginError').textContent = 'Access denied. Admins only.';
@@ -130,6 +194,7 @@ if (user) {
       document.getElementById('dashboard').style.display  = 'block';
       document.getElementById('adminEmailDisplay').textContent = user.email;
       listenToRequests();
+      listenToUsers();
     } else {
       document.getElementById('loginBox').style.display   = 'block';
       document.getElementById('mainHeader').style.display = 'none';
@@ -137,6 +202,15 @@ if (user) {
     }
   });
 
+  // ── Sections ──────────────────────────────────────────
+  function showSection(name, e) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById('section-' + name).classList.add('active');
+    document.querySelectorAll('.tabs:first-of-type .tab').forEach(t => t.classList.remove('active'));
+    if (e) e.target.classList.add('active');
+  }
+
+  // ── Balance Requests ──────────────────────────────────
   function listenToRequests() {
     db.collection('balance_requests')
       .orderBy('timestamp', 'desc')
@@ -164,7 +238,7 @@ if (user) {
 
   function filterRequests(filter, e) {
     currentFilter = filter;
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('#section-requests .tab').forEach(t => t.classList.remove('active'));
     if (e) e.target.classList.add('active');
     renderRequests();
   }
@@ -183,7 +257,6 @@ if (user) {
     list.innerHTML = data.map(r => {
       const date      = r.timestamp?.toDate?.()?.toLocaleString?.() ?? '—';
       const isPending = r.status === 'pending';
-      // ✅ using 'uid' to match your Firestore field
       const userId    = r.uid ?? r.userId ?? null;
       return `
         <div class="card ${r.status}">
@@ -210,15 +283,12 @@ if (user) {
     try {
       if (action === 'approve') {
         const userSnap = await db.collection('users').doc(userId).get();
-        if (!userSnap.exists) { showToast('User not found in Firestore!', 'error'); return; }
+        if (!userSnap.exists) { showToast('User not found!', 'error'); return; }
         const currentBalance = userSnap.data()?.balance ?? 0;
-
         const batch = db.batch();
-        batch.update(db.collection('users').doc(userId), {
-          balance: currentBalance + amount
-        });
+        batch.update(db.collection('users').doc(userId), { balance: currentBalance + amount });
         batch.update(db.collection('balance_requests').doc(reqId), {
-          status:     'approved',
+          status: 'approved',
           approvedAt: firebase.firestore.FieldValue.serverTimestamp(),
           approvedBy: auth.currentUser.email
         });
@@ -226,7 +296,7 @@ if (user) {
         showToast(`✅ Approved ₹${amount} — balance updated!`, 'success');
       } else {
         await db.collection('balance_requests').doc(reqId).update({
-          status:     'rejected',
+          status: 'rejected',
           rejectedAt: firebase.firestore.FieldValue.serverTimestamp(),
           rejectedBy: auth.currentUser.email
         });
@@ -237,6 +307,167 @@ if (user) {
     }
   }
 
+  // ── Transactions ──────────────────────────────────────
+  async function loadTransactions() {
+    const search = document.getElementById('txnSearch').value.trim().toLowerCase();
+    const list   = document.getElementById('transactionsList');
+    list.innerHTML = '<p style="color:#555;padding:20px">Loading...</p>';
+
+    try {
+      const snap = await db.collection('transactions')
+        .orderBy('timestamp', 'desc')
+        .limit(100)
+        .get();
+
+      let txns = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+      if (search) {
+        txns = txns.filter(t =>
+          (t.uid ?? '').toLowerCase().includes(search) ||
+          (t.merchantName ?? '').toLowerCase().includes(search) ||
+          (t.merchantId ?? '').toLowerCase().includes(search)
+        );
+      }
+
+      if (!txns.length) {
+        list.innerHTML = '<div id="emptyMsg">No transactions found.</div>';
+        return;
+      }
+
+      list.innerHTML = txns.map(t => {
+        const date = t.date ?? t.timestamp?.toDate?.()?.toLocaleString?.() ?? '—';
+        const type = t.type ?? 'debit';
+        return `
+          <div class="card ${type}">
+            <div class="card-info">
+              <h3>${t.merchantName ?? 'Unknown Merchant'}</h3>
+              <p>User ID: ${t.uid ?? '—'}</p>
+              <p>Merchant ID: ${t.merchantId ?? '—'}</p>
+              <p>${date}</p>
+            </div>
+            <div class="card-amount" style="color:${type === 'debit' ? '#f44336' : '#4caf50'}">
+              ${type === 'debit' ? '-' : '+'}₹${t.amount}
+            </div>
+            <div class="card-right">
+              <span class="badge ${type === 'debit' ? 'rejected' : 'approved'}">${type.toUpperCase()}</span>
+            </div>
+          </div>`;
+      }).join('');
+    } catch (err) {
+      showToast('Error loading transactions: ' + err.message, 'error');
+    }
+  }
+
+  // ── Users ─────────────────────────────────────────────
+  function listenToUsers() {
+    db.collection('users').onSnapshot(snap => {
+      allUsers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      document.getElementById('statUsers').textContent  = allUsers.length;
+      document.getElementById('statFrozen').textContent = allUsers.filter(u => u.isFrozen).length;
+      renderUsers();
+    });
+
+    document.getElementById('userSearch').addEventListener('input', renderUsers);
+  }
+
+  function renderUsers() {
+    const search = document.getElementById('userSearch').value.trim().toLowerCase();
+    const list   = document.getElementById('usersList');
+
+    let users = allUsers;
+    if (search) {
+      users = users.filter(u =>
+        (u.name ?? '').toLowerCase().includes(search) ||
+        (u.email ?? '').toLowerCase().includes(search) ||
+        (u.enrollmentNo ?? u.scholarId ?? '').toLowerCase().includes(search)
+      );
+    }
+
+    if (!users.length) {
+      list.innerHTML = '<div id="emptyMsg">No users found.</div>';
+      return;
+    }
+
+    list.innerHTML = users.map(u => {
+      const frozen = u.isFrozen ?? false;
+      return `
+        <div class="card ${frozen ? 'frozen' : ''}">
+          <div class="card-info">
+            <h3>${u.name ?? 'Unknown'}</h3>
+            <p>${u.email ?? '—'}</p>
+            <p>📱 ${u.phone ?? '—'}</p>
+            <p>🎓 ${u.enrollmentNo ?? u.scholarId ?? '—'} — ${u.department ?? '—'}</p>
+            <p>User ID: ${u.id}</p>
+          </div>
+          <div class="card-amount">₹${(u.balance ?? 0).toFixed(2)}</div>
+          <div class="card-right">
+            <span class="badge ${frozen ? 'frozen' : 'active'}">${frozen ? 'FROZEN' : 'ACTIVE'}</span>
+            <div class="actions">
+              ${frozen
+                ? `<button class="btn-unfreeze" onclick="toggleFreeze('${u.id}', false)">🔓 Unfreeze</button>`
+                : `<button class="btn-freeze"   onclick="toggleFreeze('${u.id}', true)">🔒 Freeze</button>`
+              }
+              <button class="btn-balance" onclick="openBalanceModal('${u.id}', ${u.balance ?? 0}, '${u.name ?? ''}')">💰 Balance</button>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  async function toggleFreeze(userId, freeze) {
+    try {
+      await db.collection('users').doc(userId).update({ isFrozen: freeze });
+      showToast(freeze ? '🔒 User frozen' : '🔓 User unfrozen', 'success');
+    } catch (err) {
+      showToast('Error: ' + err.message, 'error');
+    }
+  }
+
+  // ── Manual Balance ────────────────────────────────────
+  function openBalanceModal(userId, currentBalance, userName) {
+    selectedUserId      = userId;
+    selectedUserBalance = currentBalance;
+    document.getElementById('modalCurrentBalance').textContent = '₹' + currentBalance.toFixed(2) + ' (' + userName + ')';
+    document.getElementById('modalNewBalance').value  = '';
+    document.getElementById('modalReason').value      = '';
+    document.getElementById('balanceModal').classList.add('show');
+  }
+
+  function closeBalanceModal() {
+    document.getElementById('balanceModal').classList.remove('show');
+    selectedUserId = null;
+  }
+
+  async function confirmBalanceUpdate() {
+    const newBalance = parseFloat(document.getElementById('modalNewBalance').value);
+    const reason     = document.getElementById('modalReason').value.trim();
+
+    if (isNaN(newBalance) || newBalance < 0) {
+      showToast('Enter valid balance amount', 'error'); return;
+    }
+    if (!reason) {
+      showToast('Enter a reason', 'error'); return;
+    }
+    if (!selectedUserId) return;
+
+    try {
+      await db.collection('users').doc(selectedUserId).update({ balance: newBalance });
+      await db.collection('balance_corrections').add({
+        uid: selectedUserId,
+        oldBalance: selectedUserBalance,
+        newBalance: newBalance,
+        reason: reason,
+        correctedBy: auth.currentUser.email,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      showToast(`✅ Balance updated to ₹${newBalance}`, 'success');
+      closeBalanceModal();
+    } catch (err) {
+      showToast('Error: ' + err.message, 'error');
+    }
+  }
+
+  // ── Toast ─────────────────────────────────────────────
   function showToast(msg, type = 'success') {
     const box = document.getElementById('toastBox');
     const t   = document.createElement('div');
