@@ -70,6 +70,7 @@
     .modal-actions { display: flex; gap: 10px; margin-top: 8px; }
     .btn-confirm { background: #6c63ff; color: white; padding: 10px 20px; flex: 1; }
     .btn-cancel  { background: #2a2a4a; color: #e0e0e0; padding: 10px 20px; flex: 1; }
+    .txn-id { font-family: monospace; background: #0f0f1a; padding: 2px 6px; border-radius: 4px; font-size: 11px; color: #6c63ff; }
     @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; } }
   </style>
 </head>
@@ -111,7 +112,7 @@
     <button class="tab" onclick="showSection('withdrawals', event)">Withdrawals</button>
   </div>
 
-  <!-- Balance Requests Section -->
+  <!-- Balance Requests -->
   <div id="section-requests" class="section active">
     <div class="tabs" style="margin-bottom:16px">
       <button class="tab active" onclick="filterRequests('pending', event)">Pending</button>
@@ -122,16 +123,16 @@
     <div id="requestsList"><p style="color:#555;padding:20px">Loading...</p></div>
   </div>
 
-  <!-- Transactions Section -->
+  <!-- Transactions -->
   <div id="section-transactions" class="section">
     <div style="display:flex;gap:10px;margin-bottom:16px;align-items:center">
-      <input id="txnSearch" placeholder="Search by user ID or merchant..." style="margin:0;flex:1"/>
+      <input id="txnSearch" placeholder="Search by user ID, name, merchant, or transaction ID..." style="margin:0;flex:1"/>
       <button class="btn-approve" onclick="loadTransactions()" style="padding:10px 16px">🔍 Search</button>
     </div>
     <div id="transactionsList"><p style="color:#555;padding:20px">Click Search to load transactions.</p></div>
   </div>
 
-  <!-- Users Section -->
+  <!-- Users -->
   <div id="section-users" class="section">
     <div style="margin-bottom:16px">
       <input id="userSearch" placeholder="Search by name or email..." style="margin:0"/>
@@ -139,7 +140,7 @@
     <div id="usersList"><p style="color:#555;padding:20px">Loading...</p></div>
   </div>
 
-  <!-- Merchants Section -->
+  <!-- Merchants -->
   <div id="section-merchants" class="section">
     <div style="margin-bottom:16px">
       <input id="merchantSearch" placeholder="Search by name or business..." style="margin:0"/>
@@ -147,7 +148,7 @@
     <div id="merchantsList"><p style="color:#555;padding:20px">Loading...</p></div>
   </div>
 
-  <!-- Withdrawals Section -->
+  <!-- Withdrawals -->
   <div id="section-withdrawals" class="section">
     <div class="tabs" style="margin-bottom:16px">
       <button class="tab active" onclick="filterWithdrawals('pending', event)">Pending</button>
@@ -159,11 +160,11 @@
   </div>
 </div>
 
-<!-- Manual Balance Modal -->
+<!-- Balance Modal -->
 <div class="modal-overlay" id="balanceModal">
   <div class="modal">
     <h3>💰 Manual Balance Correction</h3>
-    <p style="color:#888;font-size:13px;margin-bottom:16px">Current balance: <span id="modalCurrentBalance" style="color:#6c63ff;font-weight:bold"></span></p>
+    <p style="color:#888;font-size:13px;margin-bottom:16px">Current: <span id="modalCurrentBalance" style="color:#6c63ff;font-weight:bold"></span></p>
     <input type="number" id="modalNewBalance" placeholder="Enter new balance amount"/>
     <input type="text" id="modalReason" placeholder="Reason (e.g. manual correction)"/>
     <div class="modal-actions">
@@ -173,7 +174,7 @@
   </div>
 </div>
 
-<!-- Withdrawal Approve Modal -->
+<!-- Withdrawal Modal -->
 <div class="modal-overlay" id="withdrawalModal">
   <div class="modal">
     <h3>💸 Approve Withdrawal</h3>
@@ -203,17 +204,17 @@
   const db   = firebase.firestore();
   const auth = firebase.auth();
 
-  let allRequests     = [];
-  let allUsers        = [];
-  let allMerchants    = [];
-  let allWithdrawals  = [];
-  let currentFilter   = 'pending';
-  let currentWFilter  = 'pending';
-  let selectedUserId  = null;
+  let allRequests    = [];
+  let allUsers       = [];
+  let allMerchants   = [];
+  let allWithdrawals = [];
+  let currentFilter  = 'pending';
+  let currentWFilter = 'pending';
+  let selectedUserId      = null;
   let selectedUserBalance = 0;
-  let selectedWithdrawalId = null;
+  let selectedWithdrawalId         = null;
   let selectedWithdrawalMerchantId = null;
-  let selectedWithdrawalAmount = 0;
+  let selectedWithdrawalAmount     = 0;
 
   // ── Auth ──────────────────────────────────────────────
   document.getElementById('btnLogin').onclick = () => {
@@ -224,14 +225,13 @@
     auth.signInWithEmailAndPassword(email, pass)
         .catch(err => { document.getElementById('loginError').textContent = err.message; });
   };
-
   document.getElementById('logoutBtn').onclick = () => auth.signOut();
 
   auth.onAuthStateChanged(user => {
     if (user) {
       if (user.email !== 'dwivediamol455@gmail.com') {
         auth.signOut();
-        document.getElementById('loginError').textContent = 'Access denied. Admins only.';
+        document.getElementById('loginError').textContent = 'Access denied.';
         return;
       }
       document.getElementById('loginBox').style.display   = 'none';
@@ -292,15 +292,8 @@
 
   function renderRequests() {
     const list = document.getElementById('requestsList');
-    const data = currentFilter === 'all'
-      ? allRequests
-      : allRequests.filter(r => r.status === currentFilter);
-
-    if (!data.length) {
-      list.innerHTML = `<div id="emptyMsg">No ${currentFilter} requests.</div>`;
-      return;
-    }
-
+    const data = currentFilter === 'all' ? allRequests : allRequests.filter(r => r.status === currentFilter);
+    if (!data.length) { list.innerHTML = `<div id="emptyMsg">No ${currentFilter} requests.</div>`; return; }
     list.innerHTML = data.map(r => {
       const date      = r.timestamp?.toDate?.()?.toLocaleString?.() ?? '—';
       const isPending = r.status === 'pending';
@@ -340,7 +333,7 @@
           approvedBy: auth.currentUser.email
         });
         await batch.commit();
-        showToast(`✅ Approved ₹${amount} — balance updated!`, 'success');
+        showToast(`✅ Approved ₹${amount}!`, 'success');
       } else {
         await db.collection('balance_requests').doc(reqId).update({
           status: 'rejected',
@@ -349,59 +342,57 @@
         });
         showToast('❌ Request rejected.', 'error');
       }
-    } catch (err) {
-      showToast('Error: ' + err.message, 'error');
-    }
+    } catch (err) { showToast('Error: ' + err.message, 'error'); }
   }
 
-  // ── Transactions ──────────────────────────────────────
+  // ── Transactions (NO orderBy = no index needed) ───────
   async function loadTransactions() {
     const search = document.getElementById('txnSearch').value.trim().toLowerCase();
     const list   = document.getElementById('transactionsList');
     list.innerHTML = '<p style="color:#555;padding:20px">Loading...</p>';
-
     try {
-      const snap = await db.collection('transactions')
-        .orderBy('timestamp', 'desc')
-        .limit(100)
-        .get();
-
+      const snap = await db.collection('transactions').limit(200).get();
       let txns = snap.docs.map(d => ({ id: d.id, ...d.data() }));
 
+      // Sort by timestamp descending in JS
+      txns.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+      // Search by user ID, user name, merchant name, merchant ID, or transaction ID
       if (search) {
         txns = txns.filter(t =>
-          (t.uid ?? '').toLowerCase().includes(search) ||
-          (t.merchantName ?? '').toLowerCase().includes(search) ||
-          (t.merchantId ?? '').toLowerCase().includes(search)
+          (t.uid         ?? '').toLowerCase().includes(search) ||
+          (t.userName    ?? '').toLowerCase().includes(search) ||
+          (t.merchantName?? '').toLowerCase().includes(search) ||
+          (t.merchantId  ?? '').toLowerCase().includes(search) ||
+          (t.id          ?? '').toLowerCase().includes(search)
         );
       }
 
-      if (!txns.length) {
-        list.innerHTML = '<div id="emptyMsg">No transactions found.</div>';
-        return;
-      }
+      if (!txns.length) { list.innerHTML = '<div id="emptyMsg">No transactions found.</div>'; return; }
 
       list.innerHTML = txns.map(t => {
-        const date = t.date ?? t.timestamp?.toDate?.()?.toLocaleString?.() ?? '—';
+        const date = t.date ?? (t.timestamp ? new Date(t.timestamp).toLocaleString() : '—');
         const type = t.type ?? 'debit';
         return `
           <div class="card ${type}">
             <div class="card-info">
               <h3>${t.merchantName ?? 'Unknown Merchant'}</h3>
-              <p>User: ${t.userName ?? t.uid ?? '—'}</p>
-              <p>Merchant ID: ${t.merchantId ?? '—'}</p>
-              <p>${date}</p>
+              <p>👤 User: ${t.userName ?? '—'}</p>
+              <p>🆔 User ID: ${t.uid ?? '—'}</p>
+              <p>🏪 Merchant ID: ${t.merchantId ?? '—'}</p>
+              <p>🔖 Txn ID: <span class="txn-id">${t.id}</span></p>
+              <p>📅 ${date}</p>
             </div>
-            <div class="card-amount" style="color:${type === 'debit' ? '#f44336' : '#4caf50'}">
-              ${type === 'debit' ? '-' : '+'}₹${t.amount}
+            <div class="card-amount" style="color:${type==='debit'?'#f44336':'#4caf50'}">
+              ${type==='debit'?'-':'+'}₹${t.amount}
             </div>
             <div class="card-right">
-              <span class="badge ${type === 'debit' ? 'rejected' : 'approved'}">${type.toUpperCase()}</span>
+              <span class="badge ${type==='debit'?'rejected':'approved'}">${type.toUpperCase()}</span>
             </div>
           </div>`;
       }).join('');
     } catch (err) {
-      showToast('Error loading transactions: ' + err.message, 'error');
+      list.innerHTML = `<p style="color:#f44336;padding:20px">Error: ${err.message}</p>`;
     }
   }
 
@@ -444,9 +435,9 @@
             <span class="badge ${frozen ? 'frozen' : 'active'}">${frozen ? 'FROZEN' : 'ACTIVE'}</span>
             <div class="actions">
               ${frozen
-                ? `<button class="btn-unfreeze" onclick="toggleFreeze('${u.id}', false)">🔓 Unfreeze</button>`
-                : `<button class="btn-freeze"   onclick="toggleFreeze('${u.id}', true)">🔒 Freeze</button>`}
-              <button class="btn-balance" onclick="openBalanceModal('${u.id}', ${u.balance ?? 0}, '${u.name ?? ''}')">💰 Balance</button>
+                ? `<button class="btn-unfreeze" onclick="toggleFreeze('${u.id}',false)">🔓 Unfreeze</button>`
+                : `<button class="btn-freeze"   onclick="toggleFreeze('${u.id}',true)">🔒 Freeze</button>`}
+              <button class="btn-balance" onclick="openBalanceModal('${u.id}',${u.balance??0},'${(u.name??'').replace(/'/g,"\\'")}','user')">💰 Balance</button>
             </div>
           </div>
         </div>`;
@@ -457,9 +448,7 @@
     try {
       await db.collection('users').doc(userId).update({ isFrozen: freeze });
       showToast(freeze ? '🔒 User frozen' : '🔓 User unfrozen', 'success');
-    } catch (err) {
-      showToast('Error: ' + err.message, 'error');
-    }
+    } catch (err) { showToast('Error: ' + err.message, 'error'); }
   }
 
   // ── Merchants ─────────────────────────────────────────
@@ -488,35 +477,24 @@
       const bank = m.bankAccount;
       const bankInfo = bank
         ? `🏦 ${bank.bankName} | AC: ${bank.accountNumber} | IFSC: ${bank.ifsc} | Holder: ${bank.accountHolder}`
-        : 'No bank account added';
+        : '⚠️ No bank account added';
       return `
         <div class="card merchant">
           <div class="card-info">
             <h3>${m.businessName ?? 'Unknown Business'}</h3>
             <p>👤 ${m.name ?? '—'}</p>
             <p>📧 ${m.email ?? '—'}</p>
-            <p>📱 ${m.phone ?? '—'} ${m.altPhone ? '| Alt: ' + m.altPhone : ''}</p>
+            <p>📱 ${m.phone ?? '—'} ${m.altPhone ? '| Alt: '+m.altPhone : ''}</p>
             <p>🆔 Merchant ID: ${m.id}</p>
             <p style="margin-top:6px;color:#9c27b0">${bankInfo}</p>
           </div>
           <div class="card-amount">₹${(m.balance ?? 0).toFixed(2)}</div>
           <div class="card-right">
             <span class="badge merchant">MERCHANT</span>
-            <button class="btn-balance" onclick="openMerchantBalanceModal('${m.id}', ${m.balance ?? 0}, '${m.businessName ?? ''}')">💰 Balance</button>
+            <button class="btn-balance" onclick="openBalanceModal('${m.id}',${m.balance??0},'${(m.businessName??'').replace(/'/g,"\\'")}','merchant')">💰 Balance</button>
           </div>
         </div>`;
     }).join('');
-  }
-
-  function openMerchantBalanceModal(merchantId, currentBalance, name) {
-    selectedUserId      = merchantId;
-    selectedUserBalance = currentBalance;
-    document.getElementById('modalCurrentBalance').textContent = '₹' + currentBalance.toFixed(2) + ' (' + name + ')';
-    document.getElementById('modalNewBalance').value  = '';
-    document.getElementById('modalReason').value      = '';
-    // Reuse balance modal but update for merchant
-    document.getElementById('balanceModal').setAttribute('data-type', 'merchant');
-    document.getElementById('balanceModal').classList.add('show');
   }
 
   // ── Withdrawals ───────────────────────────────────────
@@ -540,42 +518,32 @@
 
   function renderWithdrawals() {
     const list = document.getElementById('withdrawalsList');
-    const data = currentWFilter === 'all'
-      ? allWithdrawals
-      : allWithdrawals.filter(w => w.status === currentWFilter);
-
-    if (!data.length) {
-      list.innerHTML = `<div id="emptyMsg">No ${currentWFilter} withdrawal requests.</div>`;
-      return;
-    }
-
+    const data = currentWFilter === 'all' ? allWithdrawals : allWithdrawals.filter(w => w.status === currentWFilter);
+    if (!data.length) { list.innerHTML = `<div id="emptyMsg">No ${currentWFilter} withdrawal requests.</div>`; return; }
     list.innerHTML = data.map(w => {
       const date      = w.timestamp?.toDate?.()?.toLocaleString?.() ?? '—';
       const isPending = w.status === 'pending';
-
-      // Find merchant bank info
       const merchant  = allMerchants.find(m => m.id === w.merchantId);
       const bank      = merchant?.bankAccount;
       const bankInfo  = bank
         ? `🏦 ${bank.bankName} | AC: ${bank.accountNumber} | IFSC: ${bank.ifsc}`
         : '⚠️ No bank account on file';
-
       return `
         <div class="card ${w.status}">
           <div class="card-info">
-            <h3>${w.businessName ?? w.merchantName ?? 'Unknown Merchant'}</h3>
+            <h3>${w.businessName ?? w.merchantName ?? 'Unknown'}</h3>
             <p>👤 ${w.merchantName ?? '—'}</p>
             <p>📅 ${date}</p>
             <p style="margin-top:6px;color:#6c63ff">${bankInfo}</p>
-            ${w.note ? `<p>📝 Note: ${w.note}</p>` : ''}
-            ${w.utr ? `<p>✅ UTR: ${w.utr}</p>` : ''}
+            ${w.note ? `<p>📝 ${w.note}</p>` : ''}
+            ${w.utr  ? `<p>✅ UTR: ${w.utr}</p>` : ''}
           </div>
           <div class="card-amount">₹${(w.amount ?? 0).toFixed(2)}</div>
           <div class="card-right">
             <span class="badge ${w.status}">${w.status.toUpperCase()}</span>
             ${isPending ? `
               <div class="actions">
-                <button class="btn-approve" onclick="openWithdrawalModal('${w.id}','${w.merchantId}',${w.amount},'${w.businessName ?? w.merchantName ?? ''}')">✅ Approve</button>
+                <button class="btn-approve" onclick="openWithdrawalModal('${w.id}','${w.merchantId}',${w.amount},'${(w.businessName??w.merchantName??'').replace(/'/g,"\\'")}')">✅ Approve</button>
                 <button class="btn-reject"  onclick="handleWithdrawal('${w.id}','${w.merchantId}',${w.amount},'reject')">❌ Reject</button>
               </div>` : ''}
           </div>
@@ -588,7 +556,7 @@
     selectedWithdrawalMerchantId = merchantId;
     selectedWithdrawalAmount     = amount;
     document.getElementById('wModalMerchant').textContent = name;
-    document.getElementById('wModalAmount').textContent   = '₹' + amount.toFixed(2);
+    document.getElementById('wModalAmount').textContent   = '₹' + Number(amount).toFixed(2);
     document.getElementById('wModalUtr').value            = '';
     document.getElementById('withdrawalModal').classList.add('show');
   }
@@ -615,13 +583,12 @@
         const batch = db.batch();
         batch.update(db.collection('merchants').doc(merchantId), { balance: currentBalance - amount });
         batch.update(db.collection('withdrawal_requests').doc(wId), {
-          status: 'approved',
-          utr: utr,
+          status: 'approved', utr,
           approvedAt: firebase.firestore.FieldValue.serverTimestamp(),
           approvedBy: auth.currentUser.email
         });
         await batch.commit();
-        showToast(`✅ Withdrawal of ₹${amount} approved & balance deducted!`, 'success');
+        showToast(`✅ Withdrawal of ₹${amount} approved!`, 'success');
       } else {
         await db.collection('withdrawal_requests').doc(wId).update({
           status: 'rejected',
@@ -630,19 +597,17 @@
         });
         showToast('❌ Withdrawal rejected.', 'error');
       }
-    } catch (err) {
-      showToast('Error: ' + err.message, 'error');
-    }
+    } catch (err) { showToast('Error: ' + err.message, 'error'); }
   }
 
-  // ── Manual Balance ────────────────────────────────────
-  function openBalanceModal(userId, currentBalance, userName) {
-    selectedUserId      = userId;
-    selectedUserBalance = currentBalance;
-    document.getElementById('modalCurrentBalance').textContent = '₹' + currentBalance.toFixed(2) + ' (' + userName + ')';
-    document.getElementById('modalNewBalance').value  = '';
-    document.getElementById('modalReason').value      = '';
-    document.getElementById('balanceModal').setAttribute('data-type', 'user');
+  // ── Balance Modal ─────────────────────────────────────
+  function openBalanceModal(id, balance, name, type) {
+    selectedUserId      = id;
+    selectedUserBalance = balance;
+    document.getElementById('modalCurrentBalance').textContent = '₹' + Number(balance).toFixed(2) + ' (' + name + ')';
+    document.getElementById('modalNewBalance').value = '';
+    document.getElementById('modalReason').value     = '';
+    document.getElementById('balanceModal').setAttribute('data-type', type);
     document.getElementById('balanceModal').classList.add('show');
   }
 
@@ -655,28 +620,22 @@
     const newBalance = parseFloat(document.getElementById('modalNewBalance').value);
     const reason     = document.getElementById('modalReason').value.trim();
     const type       = document.getElementById('balanceModal').getAttribute('data-type');
-
-    if (isNaN(newBalance) || newBalance < 0) { showToast('Enter valid balance amount', 'error'); return; }
+    if (isNaN(newBalance) || newBalance < 0) { showToast('Enter valid balance', 'error'); return; }
     if (!reason) { showToast('Enter a reason', 'error'); return; }
     if (!selectedUserId) return;
-
     try {
-      const collection = type === 'merchant' ? 'merchants' : 'users';
-      await db.collection(collection).doc(selectedUserId).update({ balance: newBalance });
+      const col = type === 'merchant' ? 'merchants' : 'users';
+      await db.collection(col).doc(selectedUserId).update({ balance: newBalance });
       await db.collection('balance_corrections').add({
-        uid: selectedUserId,
-        type: type,
+        uid: selectedUserId, type,
         oldBalance: selectedUserBalance,
-        newBalance: newBalance,
-        reason: reason,
+        newBalance, reason,
         correctedBy: auth.currentUser.email,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
       });
       showToast(`✅ Balance updated to ₹${newBalance}`, 'success');
       closeBalanceModal();
-    } catch (err) {
-      showToast('Error: ' + err.message, 'error');
-    }
+    } catch (err) { showToast('Error: ' + err.message, 'error'); }
   }
 
   // ── Toast ─────────────────────────────────────────────
